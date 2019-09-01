@@ -1,0 +1,26 @@
+{
+  "name": "notebook",
+  "version": "1.0.0",
+  "description": "A quick notebook for my thoughts",
+  "main": "index.js",
+  "dependencies": {
+    "next": "^9.0.5",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev": "next",
+    "build":"next build && next export"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hacker719/Notebook.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hacker719/Notebook/issues"
+  },
+  "homepage": "https://github.com/Hacker719/Notebook#readme"
+}
