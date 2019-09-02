@@ -3,7 +3,7 @@
 
 const Index = () => {
     return(
-        <h1>Hi</h1>
+        <h1>Coming Soon....</h1>
     )
 }
 
