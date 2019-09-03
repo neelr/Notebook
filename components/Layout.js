@@ -26,6 +26,19 @@ const Layout = (props)=> {
                     width:100%;
                     height:100%;
                 }
+                .para {
+                    text-indent:2rem;
+                }
+                .storyImage {
+                    height:auto;
+                    width:30vw;
+                    border-radius:1vw;
+                }
+                @media screen and (max-width:881px) {
+                    .storyImage {
+                        width:256px;
+                    }
+                }
                 .title {
                     color:#ec3750;
                 }
