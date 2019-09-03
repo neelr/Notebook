@@ -1,5 +1,5 @@
 import Layout from "../../components/Layout";
-import Card from "../../components/Card";
+
 const Flagship = () => {
     return(
         <Layout>
