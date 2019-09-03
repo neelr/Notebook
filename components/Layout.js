@@ -1,5 +1,6 @@
 import Header from "../components/Header";
 import Head from "next/head";
+import {Helmet} from "react-helmet";
 const Layout = (props)=> {
     return(
         <div>
@@ -28,6 +29,28 @@ const Layout = (props)=> {
                 .item:hover {
                     color:#9cbfff;
                     cursor:pointer;
+                }
+                .break {
+                    flex-basis: 100%;
+                    height: 0;
+                }
+                @media screen and (max-width:750px) {
+                    .cardContainer {
+                        width:75vw !important;
+                    }
+                    .container {
+                        display: block !important;
+                    }
+                }
+                .cardContainer {
+                    -webkit-transition: -webkit-transform .3s ease-in-out;
+                    -ms-transition: -ms-transform .3s ease-in-out;
+                    transition: transform .3s ease-in-out;
+                }
+                .cardContainer:hover {
+                    transform: rotate(5deg) scale(1.1);
+                    -ms-transform: rotate(5deg) scale(1.1);
+                    -webkit-transform: rotate(5deg) scale(1.1);
                 }
             `}</style>
         </div>
