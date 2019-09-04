@@ -19,18 +19,23 @@ class Layout extends React.Component {
                 </div>
                 <Footer />
                 <style jsx global>{`
-                    @import url('https://fonts.googleapis.com/css?family=Fredoka+One&display=swap');
+                    @import url('https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap');
                     body,html {
                         margin:0px;
-                        font-family: 'Fredoka One', cursive;
+                        font-weight:700;
                         background-color:#17171d;
                         color:white;
                         font-size:1.15em;
                         width:100%;
                         height:100%;
+                        font-family: 'Nunito', sans-serif;
                     }
                     .para {
                         text-indent:2rem;
+                        font-weight:400;
+                    }
+                    ul {
+                        font-weight:400;
                     }
                     .storyImage {
                         height:auto;
