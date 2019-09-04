@@ -13,7 +13,8 @@ const Notebook = () => {
                         <li>Add image cards to front ✅</li>
                         <li>Add some content ✅</li>
                         <li>Make the cards move ✅</li>
-                        <li>Make a light/dark mode</li>
+                        <li>Make a light/dark mode ✅</li>
+                        <li>Anything more? Email me at <a style={{textDecoration: "none",color:"#2970f2"}} href="mailto:neel.redkar@outlook.com">neel.redkar@outlook.com</a></li>
                     </ul>
                 </div>
             </div>

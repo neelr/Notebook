@@ -1,4 +1,3 @@
-import {TiHome} from "react-icons/ti";
 import Link from "next/link";
 const Header = ()=> {
     return(
