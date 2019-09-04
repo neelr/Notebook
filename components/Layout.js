@@ -48,7 +48,7 @@ class Layout extends React.Component {
                         }
                     }
                     .title {
-                        color:#ec3750;
+                        color:green;
                     }
                     .item:hover {
                         color:#9cbfff;
