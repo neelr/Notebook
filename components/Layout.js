@@ -23,8 +23,8 @@ class Layout extends React.Component {
                     body,html {
                         margin:0px;
                         font-weight:700;
-                        background-color:#17171d;
-                        color:white;
+                        background-color:white;
+                        color:black;
                         font-size:1.15em;
                         width:100%;
                         height:100%;
@@ -48,7 +48,7 @@ class Layout extends React.Component {
                         }
                     }
                     .title {
-                        color:green;
+                        color:#ec3750;
                     }
                     .item:hover {
                         color:#9cbfff;
@@ -99,37 +99,37 @@ class Layout extends React.Component {
         )
     }
     componentDidMount() {
-        if (document.getElementById("light")) {
-            document.getElementById("light").parentNode.removeChild(document.getElementById("light"));
+        if (document.getElementById("dark")) {
+            document.getElementById("dark").parentNode.removeChild(document.getElementById("dark"));
         }
         document.querySelector("#themeBut").onclick = () => {
-            console.log("clacked",localStorage.getItem("theme") == "light")
+            //console.log("clacked",localStorage.getItem("theme") == "light")
             var check = localStorage.getItem("theme");
             if (check == "light") {
                 localStorage.setItem("theme", "dark");
             } else {
                 localStorage.setItem("theme", "light");
             }
-            if (localStorage.getItem("theme") == "light") {
+            if (localStorage.getItem("theme") == "dark") {
                 var style = document.createElement('style');
-                style.setAttribute("id", "light")
+                style.setAttribute("id", "dark")
                 style.innerHTML = `
                 html,body {
-                    background-color:white !important;
-                    color:black !important;
+                    background-color:#17171d !important;
+                    color:white !important;
                 }`;
                 document.head.appendChild(style);
             } else {
-                document.getElementById("light").parentNode.removeChild(document.getElementById("light"));
+                document.getElementById("dark").parentNode.removeChild(document.getElementById("dark"));
             }
         }
-        if (localStorage.getItem("theme") == "light") {
+        if (localStorage.getItem("theme") == "dark") {
             var style = document.createElement('style');
-            style.setAttribute("id", "light")
+            style.setAttribute("id", "dark")
             style.innerHTML = `
             html,body {
-                background-color:white !important;
-                color:black !important;
+                background-color:#17171d !important;
+                color:white !important;
             }
             `;
             document.head.appendChild(style);
