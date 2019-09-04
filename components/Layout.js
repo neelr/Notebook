@@ -57,6 +57,7 @@ class Layout extends React.Component {
                     @media screen and (max-width:750px) {
                         .cardContainer {
                             width:75vw !important;
+                            margin-bottom:20px !important;
                         }
                         .container {
                             display: block !important;
