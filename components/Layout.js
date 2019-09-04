@@ -19,10 +19,10 @@ class Layout extends React.Component {
                 </div>
                 <Footer />
                 <style jsx global>{`
-                    @import url('https://fonts.googleapis.com/css?family=Concert+One&display=swap');
+                    @import url('https://fonts.googleapis.com/css?family=Fredoka+One&display=swap');
                     body,html {
                         margin:0px;
-                        font-family: 'Concert One', cursive;
+                        font-family: 'Fredoka One', cursive;
                         background-color:#17171d;
                         color:white;
                         font-size:1.15em;
