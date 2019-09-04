@@ -94,7 +94,11 @@ class Layout extends React.Component {
         )
     }
     componentDidMount() {
+        if (document.getElementById("light")) {
+            document.getElementById("light").parentNode.removeChild(document.getElementById("light"));
+        }
         document.querySelector("#themeBut").onclick = () => {
+            console.log("clacked",localStorage.getItem("theme") == "light")
             var check = localStorage.getItem("theme");
             if (check == "light") {
                 localStorage.setItem("theme", "dark");
