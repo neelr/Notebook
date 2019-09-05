@@ -24,7 +24,7 @@ const Card = (props) => {
             <div style={styles.container} className="cardContainer">
                 <img src={props.src} style={styles.image} className="cardImage"/>
                 <div className="textCont">
-                <p>{props.desc}</p>
+                <p style={{margin:"10px"}}>{props.desc}</p>
                 </div>
             </div>
         </Link>

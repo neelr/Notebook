@@ -34,18 +34,22 @@ class Layout extends React.Component {
                         text-indent:2rem;
                         font-weight:400;
                     }
-                    ul {
+                    ul,ol {
                         font-weight:400;
                     }
                     .storyImage {
                         height:auto;
                         width:30vw;
-                        border-radius:1vw;
+                        border-radius:30px;
                     }
                     @media screen and (max-width:881px) {
                         .storyImage {
                             width:256px;
                         }
+                    }
+                    .code {
+                        background-color:#f3f3f3 !important; 
+                        color:black;
                     }
                     .title {
                         color:#ec3750;
