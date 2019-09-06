@@ -62,6 +62,11 @@ class Layout extends React.Component {
                         .cardContainer {
                             width:75vw !important;
                             margin-bottom:20px !important;
+                            margin-left:auto  !important;
+                            margin-right:auto !important;
+                        }
+                        .mobileCenter {
+                            display: flex;
                         }
                         .container {
                             display: block !important;

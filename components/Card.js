@@ -20,14 +20,16 @@ const styles = {
 
 const Card = (props) => {
         return (
-        <Link href={props.href}>
-            <div style={styles.container} className="cardContainer">
-                <img src={props.src} style={styles.image} className="cardImage"/>
-                <div className="textCont">
-                <p style={{margin:"10px"}}>{props.desc}</p>
+        <div className="mobileCenter">
+            <Link href={props.href}>
+                <div style={styles.container} className="cardContainer">
+                    <img src={props.src} style={styles.image} className="cardImage"/>
+                    <div className="textCont">
+                    <p style={{margin:"10px"}}>{props.desc}</p>
+                    </div>
                 </div>
-            </div>
-        </Link>
+            </Link>
+        </div>
     )
 }
 
