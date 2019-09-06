@@ -10,6 +10,8 @@ const Notebook = () => {
                         <p className="para">Quick background info. Repl.it and glitch are both cloud coding platforms geared toward giving coding platforms for people on the go.</p>
                         <p className="para">In the start of 2019, when competing in my science fair, a kid saw me running repl.it for my project. He started talking to me about this new platform called glitch! I decided to give it a try, and set up my project. And I waited for it to load and initialize. I waited, and waited, and waited. The glitch servers were frustratingly slow with basically nothing running on them, so I reverted back to repl.it.</p>
                         <p className="para">Usually, I would give this nothing more than that and never think about it again. Then, in the past few months, a few of my friends started to use glitch and started to tell me about how great, and amazing it was. I just said that the servers were slow and UI bad. Then in the past few weeks, I've been trying out glitch, and to my knowledge, the UI has improved, the server speed, the integrations, and almost everything about it! So many things, that I think I might start to use it over repl.it.</p>
+                        <p>Disclaimer: The main project I have done on glitch is my <a style={{textDecoration: "none",color:"#ec3750"}} href="https://glitch.com/~dankmemes2208">dankmemes2208 bot</a> and haven't used glitch too much since, but I have been using repl.it for over 5 years</p>
+                        
                         <p>A quick show of repl.it features:</p>
                         <ul>
                             <li>Online Multiplayer (recently updated)</li>
