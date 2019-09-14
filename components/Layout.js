@@ -1,7 +1,7 @@
 import Header from "../components/Header";
 import Head from "next/head";
 import Footer from "../components/Footer";
-import {MdPalette} from "react-icons/md";
+import {MdPalette,MdHome} from "react-icons/md";
 class Layout extends React.Component {
     render() {
         return (
@@ -13,6 +13,7 @@ class Layout extends React.Component {
                 <div style={{ paddingBottom: "6rem" }}>
                     <Header />
                     <span style={{ position: "absolute", top: "18px", right: "20px" }} id="themeBut" className="item"><MdPalette size="1.2em"/></span>
+                    <a href="https://neelr.dev" style={{ position: "absolute", top: "18px", left: "20px" }} id="themeBut" className="item"><MdHome size="1.2em"/></a>
                     <div style={{ padding: "5vw" }}>
                         {this.props.children}
                     </div>
