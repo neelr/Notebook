@@ -31,6 +31,13 @@ class Layout extends React.Component {
                         height:100%;
                         font-family: 'Nunito', sans-serif;
                     }
+                    a {
+                        text-decoration: none;
+                        color:#2970f2;
+                    }
+                    .redlink {
+                        color:#ec3750;
+                    }
                     .para {
                         text-indent:2rem;
                         font-weight:400;
