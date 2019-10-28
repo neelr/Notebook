@@ -87,6 +87,7 @@ class Layout extends React.Component {
                         box-shadow:5px 5px 5px 5px;
                     }
                     .cardContainer:hover {
+                        cursor:pointer;
                         transform: rotate(5deg) scale(1.1);
                         -ms-transform: rotate(5deg) scale(1.1);
                         -webkit-transform: rotate(5deg) scale(1.1);
