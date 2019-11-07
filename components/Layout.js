@@ -9,6 +9,8 @@ class Layout extends React.Component {
                 <Head>
                     <title>Notebook</title>
                     <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <meta name="title" content="Neel's Notebook"/>
+                    <meta name="description" content="A quick way to jot down my thought's and showcase my projects!"/>
                 </Head>
                 <div style={{ paddingBottom: "6rem" }}>
                     <Header />
