@@ -83,9 +83,9 @@ class Layout extends React.Component {
                         }
                     }
                     .cardContainer {
-                        -webkit-transition: -webkit-transform .1s ease-in-out;
-                        -ms-transition: -ms-transform .1s ease-in-out;
-                        transition: transform .1s ease-in-out;
+                        -webkit-transition: -webkit-transform .2s ease-in-out;
+                        -ms-transition: -ms-transform .2s ease-in-out;
+                        transition: transform .2s ease-in-out;
                         box-shadow:5px 5px 5px 5px;
                     }
                     .cardContainer:hover {
