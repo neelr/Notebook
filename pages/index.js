@@ -6,6 +6,7 @@ const Index = () => {
          <h1 className="title">My Notebook</h1>
          <p>A project where I can type out thoughts I have, articles, or anything!</p>
          <div className="container" style={{display:"flex",flexWrap:"wrap"}}>
+            <Card src="../static/new-site.png" desc="New Website! 11/19/19" href="/stories/new-site"/> 
             <Card src="../static/marker.png" desc="Marker 11/19/19" href="/stories/marker"/> 
             <Card src="../static/debatetimer.png" desc="TheDebateTimer 11/3/19" href="/stories/thedebatetimer"/>
             <Card src="../static/npm.png" desc="npm - My First 10/28/19" href="/stories/npm"/>
