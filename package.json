@@ -4,6 +4,8 @@
   "description": "A quick notebook for my thoughts",
   "main": "index.js",
   "dependencies": {
+    "airtable": "^0.8.1",
+    "dotenv": "^8.2.0",
     "next": "^9.0.5",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
@@ -12,7 +14,8 @@
   "devDependencies": {},
   "scripts": {
     "dev": "next",
-    "build": "next build && next export"
+    "build": "next build && next export",
+    "start":"next build && next start"
   },
   "repository": {
     "type": "git",

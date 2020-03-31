@@ -1,8 +1,9 @@
 import Link from "next/link";
-const Header = ()=> {
-    return(
-        <div style={{display:"flex", width:"100vw",color:"#2970f2",height:"50px"}}>
-            <Link href="/"><p className="item" style={{margin:"auto"}}>My Notebook</p></Link>
+
+const Header = () => {
+    return (
+        <div style={{ display: "flex", width: "100vw", color: "#2970f2", height: "50px" }}>
+            <Link href="/"><p onClick={() => alert("hi")} className="item" style={{ margin: "auto" }}>My Notebook</p></Link>
         </div>
     )
 }
