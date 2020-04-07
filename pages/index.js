@@ -23,9 +23,11 @@ class Index extends React.Component {
             view: "Content"
         }).eachPage((records, next) => {
             records.forEach((record) => {
-                content.push((
-                    <Card desc={record.get("Title") + " " + record.get('Time')} src={record.get("Cover")[0].url} href={"/stories/" + record.get("Query")} />
-                ))
+                if (record.get("Done")) {
+                    content.push((
+                        <Card desc={record.get("Title") + " " + record.get('Time')} src={record.get("Cover")[0].url} href={"/stories/" + record.get("Query")} />
+                    ))
+                }
             });
             next();
         }, (err) => {
