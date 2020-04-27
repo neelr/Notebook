@@ -6,26 +6,26 @@ const styles = {
         flexDirection: "column",
         backgroundColor: "white",
         color: "black",
-        width: "25vw", 
+        width: "25vw",
         borderRadius: "20px",
-        overflow:'hidden',
+        overflow: 'hidden',
         textAlign: "center",
-        margin:"10px"
+        margin: "10px"
     },
-    image: { 
+    image: {
         width: "100%",
         height: "auto",
     },
 }
 
 const Card = (props) => {
-        return (
+    return (
         <div className="mobileCenter">
             <Link href={props.href}>
                 <div style={styles.container} className="cardContainer">
-                    <img src={props.src} style={styles.image} className="cardImage"/>
+                    <img src={props.src} style={styles.image} className="cardImage" />
                     <div className="textCont">
-                    <p style={{margin:"10px"}}>{props.desc}</p>
+                        <p style={{ margin: "10px", fontWeight: "700" }}>{props.desc}</p>
                     </div>
                 </div>
             </Link>

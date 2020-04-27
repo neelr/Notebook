@@ -27,7 +27,7 @@ class Index extends React.Component {
                     content.push((
                         <Card desc={record.get("Title") + " " + record.get('Time')} src={record.get("Cover")[0].url} href={"/stories/" + record.get("Query")} />
                     ))
-                }
+                } 2
             });
             next();
         }, (err) => {

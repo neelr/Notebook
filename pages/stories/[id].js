@@ -1,10 +1,9 @@
 import Layout from "../../components/Layout";
 import Airtable from "airtable";
 var base = new Airtable({ apiKey: process.env.AIRTABLE }).base(process.env.BASE);
+import marked from "marked"
 
 var Routes = (props) => {
-
-    console.log(props)
     if (props.record) {
         return (
             <Layout>
@@ -13,7 +12,7 @@ var Routes = (props) => {
                         <h1 className="title">{props.record.Title}</h1>
                         <img src={props.record.Cover[0].url} className="storyImage" />
                         <p style={{ color: "#2970f2" }}>{props.record.Time}</p>
-                        <div dangerouslySetInnerHTML={{ __html: props.record.Content }}></div>
+                        <div dangerouslySetInnerHTML={{ __html: marked(props.record.Content) }}></div>
                     </div>
                 </div>
             </Layout>)
