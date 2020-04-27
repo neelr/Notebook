@@ -1,5 +1,4 @@
 import Header from "../components/Header";
-import Head from "next/head";
 import Footer from "../components/Footer";
 import Link from "next/link";
 import { MdPalette, MdHome } from "react-icons/md";
@@ -47,15 +46,6 @@ var Layout = props => {
 
   return (
     <div style={{ position: "relative", minHeight: "100vh" }}>
-      <Head>
-        <title>Notebook</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="title" content="Neel's Notebook" />
-        <meta
-          name="description"
-          content="A quick way to jot down my thought's and showcase my projects!"
-        />
-      </Head>
       <div style={{ paddingBottom: "6rem" }}>
         <Header />
         <span
@@ -102,6 +92,12 @@ var Layout = props => {
         ul,
         ol {
           font-weight: 400;
+        }
+        blockquote {
+          border-left: 4px solid #ec3750;
+          margin: 1.5em 0em;
+          padding: 0.5em 1em;
+          font-style: italic;
         }
         .storyImage {
           height: auto;

@@ -1,5 +1,6 @@
 import Layout from "../components/Layout";
 import Card from "../components/Card";
+import Head from "next/head";
 import Airtable from "airtable";
 var base = new Airtable({ apiKey: process.env.AIRTABLE }).base(process.env.BASE);
 class Index extends React.Component {
@@ -9,6 +10,15 @@ class Index extends React.Component {
     render() {
         return (
             <Layout>
+                <Head>
+                    <title>Notebook</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1" />
+                    <meta name="title" content="Neel's Notebook" />
+                    <meta
+                        name="description"
+                        content="A quick way to jot down my thought's and showcase my projects!"
+                    />
+                </Head>
                 <h1 className="title">My Notebook</h1>
                 <p>A project where I can type out thoughts I have, articles, or anything!</p>
                 <div className="container" style={{ display: "flex", flexWrap: "wrap" }}>
