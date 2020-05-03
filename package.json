@@ -1,31 +1,24 @@
 {
 	"name": "notebook",
-	"version": "1.0.0",
-	"description": "A quick notebook for my thoughts",
-	"main": "index.js",
-	"dependencies": {
-		"airtable": "^0.8.1",
-		"dotenv": "^8.2.0",
-		"marked": "^1.0.0",
-		"next": "^9.3.5",
-		"react": "^16.13.1",
-		"react-dom": "^16.13.1",
-		"react-feather": "^2.0.8"
-	},
-	"devDependencies": {},
+	"version": "2.0.0",
+	"description": "A notebook to store my thoughts",
+	"main": "-",
 	"scripts": {
-		"dev": "next",
-		"build": "next build",
-		"start": "next start"
+		"test": "next"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Hacker719/Notebook.git"
+		"url": "git+https://github.com/neelr/notebook.git"
 	},
-	"author": "",
+	"author": "neelr",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/Hacker719/Notebook/issues"
+		"url": "https://github.com/neelr/notebook/issues"
 	},
-	"homepage": "https://github.com/Hacker719/Notebook#readme"
+	"homepage": "https://github.com/neelr/notebook#readme",
+	"dependencies": {
+		"next": "^9.3.6",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1"
+	}
 }
