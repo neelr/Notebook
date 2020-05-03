@@ -1,6 +1,9 @@
+/** @jsx jsx */
+import { jsx } from 'theme-ui'
 import React from 'react'
 import { Text, Flex, Heading, Image, Link as RebassLink } from "rebass";
 import Link from "next/link"
+import { Star } from "react-feather"
 
 const A = ({ sx, ...props }) => (
     <RebassLink
@@ -33,7 +36,9 @@ export default class extends React.Component {
                                         cursor: "pointer"
                                     }
                                 }}>
-                                    <Image src={d.data.cover_image.url} width="200px" />
+                                    <img sx={{
+                                        height: ["100px", "150px", null, "300px"]
+                                    }} alt={d.data.cover_image.alt} src={d.data.cover_image.url} />
                                     <Flex flexDirection="column" p="10px">
                                         <Heading>{d.data.title[0].text}</Heading>
                                         <Text fontStyle="italic">{d.data.date_created}</Text>
@@ -46,6 +51,10 @@ export default class extends React.Component {
                                                     </A>
                                                 </Link>
                                             ))}
+                                        </Flex>
+                                        <Flex m="10px">
+                                            <Text pr="3px">{this.props.votes[d.id] ? this.props.votes[d.id] : 0}</Text>
+                                            <Star size={24} sx={{ fill: "gold", color: "transparent" }} />
                                         </Flex>
                                     </Flex>
                                 </Flex>

@@ -28,9 +28,7 @@ export default ({ sx, ...props }) => {
             <NavLink my="auto" fontWeight="400" href="https://neelr.dev">
                 @neelr
             </NavLink>
-            <Link href="/">
-                <NavLink m="auto">My Notebook</NavLink>
-            </Link>
+            <NavLink m="auto" href="/">My Notebook</NavLink>
             <NavLink
                 sx={{
                     boxSizing: "border-box",
@@ -46,7 +44,7 @@ export default ({ sx, ...props }) => {
                     }
                 }}
                 onClick={() => {
-                    setColorMode(colorMode === 'default' ? 'dark' : 'default')
+                    setColorMode(colorMode === 'default' ? 'deep' : 'default')
                 }}>
                 {colorMode == "default" ? <Sun size={24} /> : <Moon size={24} />}
             </NavLink>
