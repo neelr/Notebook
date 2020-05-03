@@ -22,6 +22,7 @@ const A = ({ sx, ...props }) => (
 
 export default class extends React.Component {
     render() {
+        console.log(this.props.stories)
         return (
             <Flex flexDirection="column">
                 {

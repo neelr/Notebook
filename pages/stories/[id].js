@@ -72,6 +72,7 @@ export default class Story extends React.Component {
             >
                 <Head>
                     <title>{RichText.asText(this.props.story.data.title)}</title>
+<<<<<<< HEAD
                     <meta
                         property="og:title"
                         content={RichText.asText(this.props.story.data.title)}
@@ -86,6 +87,11 @@ export default class Story extends React.Component {
                         property="description"
                         content={RichText.asText(this.props.story.data.description)}
                     />
+=======
+                    <meta property="og:title" content={RichText.asText(this.props.story.data.title)} />
+                    <meta property="og:image" content={this.props.story.data.cover_image.url} />
+                    <meta property="description" content={RichText.asText(this.props.story.data.description)} />
+>>>>>>> ab2e476a5acb3ae7cd107b024b45b8227f75043a
                 </Head>
 
                 <Heading fontSize={[4, 5, 6]}>
@@ -114,6 +120,7 @@ export default class Story extends React.Component {
                         </Link>
                     ))}
                 </Flex>
+<<<<<<< HEAD
 
                 <Image
                     m="15px"
@@ -161,14 +168,39 @@ export default class Story extends React.Component {
                         }
                     }} />
                 </Flex>
+=======
+                <Image m="15px" width="50%" src={this.props.story.data.cover_image.url} />
+                {this.props.story.data.body1.map(slice => (
+                    slice.slice_type == "html" ?
+                        <Flex sx={{
+                            blockquote: {
+                                fontStyle: "italic",
+                                borderLeft: "5px solid red",
+                                pl: "15px"
+                            },
+                            code: {
+                                bg: "hsl(230, 25%, 18%)",
+                                color: "white",
+                                p: "5px"
+                            }
+                        }} flexDirection="column" dangerouslySetInnerHTML={{ __html: marked(RichText.asText(slice.primary.html)) }} />
+                        : <RichText render={slice.primary.text} />
+                ))}
+>>>>>>> ab2e476a5acb3ae7cd107b024b45b8227f75043a
             </Flex>
         );
     }
+<<<<<<< HEAD
 
     static async getInitialProps(ctx) {
         const response = await Client.getByID(ctx.query.id);
         const votes = await fetch(serverRuntimeConfig.UPVOTE_URL)
         let json = await votes.json()
         return { story: response, votes: json[ctx.query.id] ? json[ctx.query.id] : 0 };
+=======
+    static async getInitialProps(ctx) {
+        const response = await Client.getByID(ctx.query.id)
+        return { story: response }
+>>>>>>> ab2e476a5acb3ae7cd107b024b45b8227f75043a
     }
 }
