@@ -11,7 +11,7 @@ export default class extends React.Component {
         const response = await Client.query(
             Prismic.Predicates.at("document.type", "stories"),
             {
-                orderings: '[my.stories.data.date_created desc]',
+                orderings: '[my.stories.date_created desc]',
                 pageSize: 100,
                 page: ctx.query.page ? ctx.query.page : 1
             }
@@ -26,6 +26,9 @@ export default class extends React.Component {
             <Flex flexDirection="column">
                 <Head>
                     <title>Notebook v2.0</title>
+                    <meta property="og:title" content="Notebook v2.0" />
+                    <meta property="og:image" content="http://notebook.neelr.dev/openg.png" />
+                    <meta property="description" content="A nice way to jot down thoughts, ideas, or articles I have!" />
                 </Head>
                 <Heading fontSize={[4, 5, 6]}>Notebook v2.0</Heading>
                 <Text>Rebuilding my Notebook from an Airtable CMS, to Prismic, and adding cool new designs! This is just a fun way for me to write down thoughts, ideas, or articles!</Text>

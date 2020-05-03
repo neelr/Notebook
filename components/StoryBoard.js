@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from 'theme-ui'
 import React from 'react'
 import { Text, Flex, Heading, Image, Link as RebassLink } from "rebass";
 import Link from "next/link"
@@ -19,6 +21,7 @@ const A = ({ sx, ...props }) => (
 
 export default class extends React.Component {
     render() {
+        console.log(this.props.stories)
         return (
             <Flex flexDirection="column">
                 {
@@ -33,7 +36,9 @@ export default class extends React.Component {
                                         cursor: "pointer"
                                     }
                                 }}>
-                                    <Image src={d.data.cover_image.url} width="200px" />
+                                    <img sx={{
+                                        height: ["100px", "150px", null, "300px"]
+                                    }} alt={d.data.cover_image.alt} src={d.data.cover_image.url} />
                                     <Flex flexDirection="column" p="10px">
                                         <Heading>{d.data.title[0].text}</Heading>
                                         <Text fontStyle="italic">{d.data.date_created}</Text>

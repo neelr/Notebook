@@ -27,6 +27,9 @@ export default class extends React.Component {
             <Flex flexDirection="column">
                 <Head>
                     <title>#{this.props.id}</title>
+                    <meta property="og:title" content={`Notebook v2.0 #${this.props.id}`} />
+                    <meta property="og:image" content="http://notebook.neelr.dev/openg.png" />
+                    <meta property="description" content="A nice way to jot down thoughts, ideas, or articles I have!" />
                 </Head>
                 <Heading fontSize={[4, 5, 6]}>#{this.props.id}</Heading>
                 <Text>All articles with the #{this.props.id} tag!</Text>

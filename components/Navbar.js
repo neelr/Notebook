@@ -46,7 +46,7 @@ export default ({ sx, ...props }) => {
                     }
                 }}
                 onClick={() => {
-                    setColorMode(colorMode === 'default' ? 'dark' : 'default')
+                    setColorMode(colorMode === 'default' ? 'deep' : 'default')
                 }}>
                 {colorMode == "default" ? <Sun size={24} /> : <Moon size={24} />}
             </NavLink>
