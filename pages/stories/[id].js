@@ -1,56 +1,61 @@
-import Layout from "../../components/Layout";
-import Airtable from "airtable";
-import Head from "next/head";
-var base = new Airtable({ apiKey: process.env.AIRTABLE }).base(process.env.BASE);
-import marked from "marked"
+import React from 'react'
+import { Client } from '../../prismic-configuration'
+import Prismic from "prismic-javascript"
+import { Text, Flex, Heading, Image, Link as RebassLink } from "rebass";
+import Link from "next/link"
+import { RichText } from "prismic-reactjs"
+import Head from "next/head"
 
-var Routes = (props) => {
-    if (props.record) {
+const A = ({ sx, ...props }) => (
+    <RebassLink
+        sx={{
+            color: "primary",
+            textDecoration: "underline",
+            textDecorationStyle: "wavy",
+            ":hover": {
+                color: "secondary",
+                cursor: "pointer",
+            },
+            ...sx
+        }}
+        {...props} />
+)
+export default class Story extends React.Component {
+    render() {
         return (
-            <Layout>
+            <Flex flexDirection="column" sx={{
+                a: {
+                    color: "primary",
+                    textDecoration: "underline",
+                    textDecorationStyle: "wavy",
+                    ":hover": {
+                        color: "secondary",
+                        cursor: "pointer",
+                    }
+                }
+            }}>
                 <Head>
-                    <title>{props.record.Title}</title>
-                    <meta name="og:image" content={props.record.Cover[0].url} />
-                    <meta name="og:title" content={props.record.Title} />
-                    <meta name="og:description" content={`An article written by Neel Redkar on ${props.record.Time}`} />
+                    <title>{RichText.asText(this.props.story.data.title)}</title>
                 </Head>
-                <div style={{ display: "flex" }}>
-                    <div className="child">
-                        <h1 className="title">{props.record.Title}</h1>
-                        <img src={props.record.Cover[0].url} className="storyImage" />
-                        <p style={{ color: "#2970f2" }}>{props.record.Time}</p>
-                        <div dangerouslySetInnerHTML={{ __html: marked(props.record.Content) }}></div>
-                    </div>
-                </div>
-            </Layout>)
-    } else {
-        return (
-            <Layout>
-                <div style={{ display: "flex" }}>
-                    <div className="child">
-                        <h1 className="title">Story Not Found</h1>
-                    </div>
-                </div>
-            </Layout>
+                <Heading fontSize={[4, 5, 6]}>{RichText.asText(this.props.story.data.title)}</Heading>
+                <Text m="10px" fontWeight="500">{this.props.story.data.date_created}</Text>
+                <Flex flexWrap="wrap">
+                    {this.props.story.tags.map(tag => (
+                        <Link href={`/tags/${tag}`}>
+                            <A mx="5px">
+                                <Text sx={{ fontSize: 1, fontStyle: "italic" }}>#{tag}</Text>
+                            </A>
+                        </Link>
+                    ))}
+                </Flex>
+                <Image m="15px" width="50%" src={this.props.story.data.cover_image.url} />
+                <RichText render={this.props.story.data.body} />
+            </Flex>
         )
     }
-}
-Routes.getInitialProps = async (context) => {
-    return new Promise((res, rej) => {
-        base('Main Content').select({
-            view: "Content",
-            filterByFormula: "{Query} = '" + context.query.id + "'"
-        }).eachPage((records, next) => {
-            records.forEach((record) => {
-                if (record.get("Done")) {
-                    res({
-                        record: record.fields
-                    })
-                }
-            });
-            next();
-        }, () => res({ found: false }));
-    })
-}
+    static async getInitialProps(ctx) {
+        const response = await Client.getByID(ctx.query.id)
 
-export default Routes;
+        return { story: response }
+    }
+}

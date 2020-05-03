@@ -1,14 +1,19 @@
-import Layout from "../components/Layout";
+import React from 'react'
+import { Client } from '../prismic-configuration'
+import Prismic from "prismic-javascript"
+import { Text, Flex, Heading, Image, Link as RebassLink } from "rebass";
+import Head from "next/head"
+import StoryBoard from "../components/StoryBoard"
 
-const Error = () => {
-    return (
-        <Layout>
-            <h1 className="title">Whoops!</h1>
-            <p>This is awkward... Seems like an error occured....</p>
-            <p>Click the top "My Notebook" to go back!</p>
-        </Layout>
-    )
+export default class extends React.Component {
+    render() {
+        return (
+            <Flex flexDirection="column">
+                <Head>
+                    <title>Error 404</title>
+                </Head>
+                <Heading fontSize={[4, 5, 6]} color="red">Error 404</Heading>
+            </Flex>
+        )
+    }
 }
-
-
-export default Error;

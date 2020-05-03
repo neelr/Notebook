@@ -1,15 +1,15 @@
 import React from 'react'
-import { Client } from '../prismic-configuration'
+import { Client } from '../../prismic-configuration'
 import Prismic from "prismic-javascript"
 import { Text, Flex, Heading, Button } from "rebass";
+import StoryBoard from "../../components/StoryBoard"
 import Head from "next/head"
-import StoryBoard from "../components/StoryBoard"
 import Link from "next/link"
 
 export default class extends React.Component {
     static async getInitialProps(ctx) {
         const response = await Client.query(
-            Prismic.Predicates.at("document.type", "stories"),
+            Prismic.Predicates.at("document.tags", [ctx.query.id]),
             {
                 orderings: '[my.stories.data.date_created desc]',
                 pageSize: 100,
@@ -18,6 +18,7 @@ export default class extends React.Component {
         )
         return {
             doc: response,
+            id: ctx.query.id,
             page: ctx.query.page ? ctx.query.page : 1
         }
     }
@@ -25,10 +26,10 @@ export default class extends React.Component {
         return (
             <Flex flexDirection="column">
                 <Head>
-                    <title>Notebook v2.0</title>
+                    <title>#{this.props.id}</title>
                 </Head>
-                <Heading fontSize={[4, 5, 6]}>Notebook v2.0</Heading>
-                <Text>Rebuilding my Notebook from an Airtable CMS, to Prismic, and adding cool new designs! This is just a fun way for me to write down thoughts, ideas, or articles!</Text>
+                <Heading fontSize={[4, 5, 6]}>#{this.props.id}</Heading>
+                <Text>All articles with the #{this.props.id} tag!</Text>
                 <StoryBoard stories={this.props.doc} />
                 {this.props.doc.total_pages > 1 ?
                     <Flex>
