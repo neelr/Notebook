@@ -1,7 +1,8 @@
+import { renderToString } from 'react-dom/server'
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Link from "next/link";
-import { MdPalette, MdHome } from "react-icons/md";
+import { Moon, Sun, Home } from "react-feather"
 var Layout = props => {
   if (process.browser) {
     if (document.getElementById("dark")) {
@@ -13,8 +14,10 @@ var Layout = props => {
       var check = localStorage.getItem("theme");
       if (check == "light") {
         localStorage.setItem("theme", "dark");
+        document.getElementById("themeBut").innerHTML = renderToString(<Moon size="1.2em" />)
       } else {
         localStorage.setItem("theme", "light");
+        document.getElementById("themeBut").innerHTML = renderToString(<Sun size="1.2em" />)
       }
       if (localStorage.getItem("theme") == "dark") {
         var style = document.createElement("style");
@@ -32,6 +35,7 @@ var Layout = props => {
       }
     };
     if (localStorage.getItem("theme") == "dark") {
+      document.getElementById("themeBut").innerHTML = renderToString(<Moon size="1.2em" />)
       var style = document.createElement("style");
       style.setAttribute("id", "dark");
       style.innerHTML = `
@@ -53,14 +57,14 @@ var Layout = props => {
           id="themeBut"
           className="item"
         >
-          <MdPalette size="1.2em" />
+          <Sun size="1.2em" />
         </span>
         <Link href="/">
           <a
             style={{ position: "absolute", top: "18px", left: "20px" }}
             className="item"
           >
-            <MdHome size="1.2em" />
+            <Home size="1.2em" />
           </a></Link>
         <div style={{ padding: "5vw" }}>{props.children}</div>
       </div>
@@ -76,7 +80,7 @@ var Layout = props => {
           font-size: 1.15em;
           width: 100%;
           height: 100%;
-          font-family: "Nunito", sans-serif;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-seri;
         }
         a {
           text-decoration-style: wavy;

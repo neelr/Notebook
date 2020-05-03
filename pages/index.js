@@ -20,7 +20,7 @@ class Index extends React.Component {
                     />
                 </Head>
                 <h1 className="title">My Notebook</h1>
-                <p>A project where I can type out thoughts I have, articles, or anything!</p>
+                <p style={{ textIndent: "0px" }}>A project where I can type out thoughts I have, articles, or anything!</p>
                 <div className="container" style={{ display: "flex", flexWrap: "wrap" }}>
                     {this.state.cards.slice().reverse()}
                 </div>
