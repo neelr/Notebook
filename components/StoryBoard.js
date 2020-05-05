@@ -28,7 +28,7 @@ export default class extends React.Component {
                     this.props.stories.results.map(d => (
                         <Flex flexDirection="column">
                             <Flex width="100%" height="3px" my="15px" bg="secondary" />
-                            <Link href={`/stories/${d.slugs[0]}`}>
+                            <Link href={`/stories/${d.id}`}>
                                 <Flex sx={{
                                     transition: "all 0.3s",
                                     ":hover": {
