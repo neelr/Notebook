@@ -37,10 +37,12 @@ export default class extends React.Component {
                                         cursor: "pointer"
                                     }
                                 }}>
-                                    <img sx={{
-                                        height: ["100px", "150px"],
-                                        mx: ["auto", "auto", "0"]
-                                    }} alt={d.data.cover_image.alt} src={d.data.cover_image.url} />
+                                    <Flex width="50%">
+                                        <img sx={{
+                                            width: ["auto", "100%"],
+                                            mx: ["auto", "0"]
+                                        }} alt={d.data.cover_image.alt} src={d.data.cover_image.url} />
+                                    </Flex>
                                     <Flex flexDirection="column" p="10px">
                                         <Heading>{d.data.title[0].text}</Heading>
                                         <Text fontStyle="italic">{d.data.date_created}</Text>
