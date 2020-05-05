@@ -22,14 +22,13 @@ const A = ({ sx, ...props }) => (
 
 export default class extends React.Component {
     render() {
-        console.log(this.props.stories)
         return (
             <Flex flexDirection="column">
                 {
                     this.props.stories.results.map(d => (
                         <Flex flexDirection="column">
                             <Flex width="100%" height="3px" my="15px" bg="secondary" />
-                            <Link href={`/stories/${d.id}`}>
+                            <Link href={`/stories/${d.slugs[0]}`}>
                                 <Flex sx={{
                                     transition: "all 0.3s",
                                     ":hover": {
