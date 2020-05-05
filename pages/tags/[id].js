@@ -16,7 +16,7 @@ export default class extends React.Component {
             Prismic.Predicates.at("document.tags", [ctx.query.id]),
             {
                 orderings: '[my.stories.date_created desc]',
-                pageSize: 100,
+                pageSize: 5,
                 page: ctx.query.page ? ctx.query.page : 1
             }
         )
@@ -41,17 +41,15 @@ export default class extends React.Component {
                 <Heading fontSize={[4, 5, 6]}>#{this.props.id}</Heading>
                 <Text>All articles with the #{this.props.id} tag!</Text>
                 <StoryBoard stories={this.props.doc} votes={this.props.upvotes} />
-                {this.props.doc.total_pages > 1 ?
-                    <Flex>
-                        <Link href={`/tags/${this.props.id}?page=${parseInt(this.props.page) - 1}`}>
-                            <Button mx="auto" my="10px" sx={{ ":hover": { cursor: "pointer", bg: "secondary" } }}>Back</Button>
-                        </Link>
-                        <Link href={`/tags/${this.props.id}?page=${parseInt(this.props.page) + 1}`}>
-                            <Button mx="auto" my="10px" sx={{ ":hover": { cursor: "pointer", bg: "secondary" } }}>Load More...</Button>
-                        </Link>
-                    </Flex>
-                    : null
-                }
+                <Flex>
+                    {parseInt(this.props.page) == 1 ? null :
+                        <Button href={`/tags/${this.props.id}/?page=${parseInt(this.props.page) - 1}`} as="a" mx="auto" my="10px" sx={{ ":hover": { cursor: "pointer", bg: "secondary" } }}>&lt;&lt; Back</Button>
+                    }
+                    {
+                        this.props.doc.total_pages == parseInt(this.props.page) ? null :
+                            <Button href={`/tags/${this.props.id}/?page=${parseInt(this.props.page) + 1}`} as="a" mx="auto" my="10px" sx={{ ":hover": { cursor: "pointer", bg: "secondary" } }}>Next Page >></Button>
+                    }
+                </Flex>
             </Flex>
         )
     }

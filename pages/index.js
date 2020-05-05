@@ -40,17 +40,15 @@ export default class extends React.Component {
                 <Heading fontSize={[4, 5, 6]}>Notebook v2.0</Heading>
                 <Text>Rebuilding my Notebook from an Airtable CMS, to Prismic, and adding cool new designs! This is just a fun way for me to write down thoughts, ideas, or articles!</Text>
                 <StoryBoard stories={this.props.doc} votes={this.props.upvotes} />
-                {this.props.doc.total_pages > 1 ?
-                    <Flex>
-                        {parseInt(this.props.page) == 1 ? null :
-                            <Button href={`/?page=${parseInt(this.props.page) - 1}`} as="a" mx="auto" my="10px" sx={{ ":hover": { cursor: "pointer", bg: "secondary" } }}>Back</Button>
-                        }
-
-                        <Button href={`/?page=${parseInt(this.props.page) + 1}`} as="a" mx="auto" my="10px" sx={{ ":hover": { cursor: "pointer", bg: "secondary" } }}>Next Page >></Button>
-
-                    </Flex>
-                    : null
-                }
+                <Flex>
+                    {parseInt(this.props.page) == 1 ? null :
+                        <Button href={`/?page=${parseInt(this.props.page) - 1}`} as="a" mx="auto" my="10px" sx={{ ":hover": { cursor: "pointer", bg: "secondary" } }}>&lt;&lt; Back</Button>
+                    }
+                    {
+                        this.props.doc.total_pages == parseInt(this.props.page) ? null :
+                            <Button href={`/?page=${parseInt(this.props.page) + 1}`} as="a" mx="auto" my="10px" sx={{ ":hover": { cursor: "pointer", bg: "secondary" } }}>Next Page >></Button>
+                    }
+                </Flex>
             </Flex>
         )
     }
