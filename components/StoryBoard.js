@@ -30,6 +30,7 @@ export default class extends React.Component {
                             <Flex width="100%" height="3px" my="15px" bg="secondary" />
                             <Link href={`/stories/${d.id}`}>
                                 <Flex sx={{
+                                    flexDirection: ["column", "column", "row"],
                                     transition: "all 0.3s",
                                     ":hover": {
                                         boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
@@ -37,7 +38,8 @@ export default class extends React.Component {
                                     }
                                 }}>
                                     <img sx={{
-                                        height: ["100px", "150px", null, "300px"]
+                                        height: ["100px", "150px"],
+                                        mx: ["auto", "auto", "0"]
                                     }} alt={d.data.cover_image.alt} src={d.data.cover_image.url} />
                                     <Flex flexDirection="column" p="10px">
                                         <Heading>{d.data.title[0].text}</Heading>
