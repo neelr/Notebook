@@ -37,10 +37,11 @@ export default class extends React.Component {
                                         cursor: "pointer"
                                     }
                                 }}>
-                                    <Flex width="50%">
+                                    <Flex width={["100%", "50%"]}>
                                         <img sx={{
-                                            width: ["auto", "100%"],
-                                            mx: ["auto", "0"]
+                                            width: "100%",
+                                            height: "100%",
+                                            mx: "auto"
                                         }} alt={d.data.cover_image.alt} src={d.data.cover_image.url} />
                                     </Flex>
                                     <Flex flexDirection="column" p="10px">
