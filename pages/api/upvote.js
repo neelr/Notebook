@@ -11,7 +11,7 @@ export default async (req, res) => {
         let id = JSON.parse(req.body).id
         payload[id] = json[id] ? json[id] + 1 : 1
         resp = await fetch(serverRuntimeConfig.UPVOTE_URL, {
-            method: "POST",
+            method: "PUT",
             body: JSON.stringify(payload)
         })
         json = await resp.text()
