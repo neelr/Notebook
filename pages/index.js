@@ -16,7 +16,7 @@ export default class extends React.Component {
             Prismic.Predicates.at("document.type", "stories"),
             {
                 orderings: '[my.stories.date_created desc]',
-                pageSize: 5,
+                pageSize: 15,
                 page: ctx.query.page ? ctx.query.page : 1
             }
         )
