@@ -8,10 +8,8 @@ import Link from "next/link";
 import { RichText } from "prismic-reactjs";
 import Head from "next/head";
 import { Star } from "react-feather"
-import getConfig from 'next/config'
 import fetch from "isomorphic-unfetch"
-
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
+import { local } from "../api/get"
 
 const A = ({ sx, ...props }) => (
     <RebassLink
@@ -44,6 +42,9 @@ export default class Story extends React.Component {
             this.setState({ starColor: "gold", votes: 1 })
             fetch("/api/upvote", {
                 method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     id: this.props.story.id
                 })
@@ -83,7 +84,22 @@ export default class Story extends React.Component {
                     />
 
                     <meta
-                        property="description"
+                        property="og:description"
+                        content={RichText.asText(this.props.story.data.description)}
+                    />
+                    <meta property="twitter:card" content="summary_large_image" />
+                    <meta
+                        property="twitter:title"
+                        content={RichText.asText(this.props.story.data.title)}
+                    />
+
+                    <meta
+                        property="twitter:image"
+                        content={this.props.story.data.cover_image.url}
+                    />
+
+                    <meta
+                        property="twitter:description"
                         content={RichText.asText(this.props.story.data.description)}
                     />
                 </Head>
@@ -165,11 +181,10 @@ export default class Story extends React.Component {
             </Flex>
         );
     }
+}
 
-    static async getInitialProps(ctx) {
-        const response = await Client.getByID(ctx.query.id);
-        const votes = await fetch(serverRuntimeConfig.UPVOTE_URL)
-        let json = await votes.json()
-        return { story: response, votes: json[ctx.query.id] ? json[ctx.query.id] : 0 };
-    }
+export let getServerSideProps = async (ctx) => {
+    const response = await Client.getByID(ctx.query.id);
+    let stars = await local(ctx.query.id)
+    return { props: { story: response, votes: stars } };
 }

@@ -6,7 +6,7 @@ import { Flex } from "rebass"
 
 export default ({ Component, pageProps }) => (
     <ThemeProvider theme={theme}>
-        <Flex width="100vw" minHeight="100vh" flexDirection="column">
+        <Flex minHeight="100vh" flexDirection="column">
             <Flex width={["90vw", null, null, "60vw"]} mx="auto" flexDirection="column">
                 <Nav />
                 <Component {...pageProps} />

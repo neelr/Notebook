@@ -12,7 +12,7 @@ export default class extends React.Component {
                 <Head>
                     <title>Error 404</title>
                 </Head>
-                <Heading fontSize={[4, 5, 6]} color="red">Error 404</Heading>
+                <Heading fontSize={[4, 5, 6]} m="auto">Error 404</Heading>
             </Flex>
         )
     }

@@ -4,31 +4,9 @@ import Prismic from "prismic-javascript"
 import { Text, Flex, Heading, Button } from "rebass";
 import StoryBoard from "../../components/StoryBoard"
 import Head from "next/head"
-import Link from "next/link"
-import getConfig from 'next/config'
-import fetch from "isomorphic-unfetch"
-
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig()
+import { local } from "../api/get"
 
 export default class extends React.Component {
-    static async getInitialProps(ctx) {
-        const response = await Client.query(
-            Prismic.Predicates.at("document.tags", [ctx.query.id]),
-            {
-                orderings: '[my.stories.date_created desc]',
-                pageSize: 5,
-                page: ctx.query.page ? ctx.query.page : 1
-            }
-        )
-        const votes = await fetch(serverRuntimeConfig.UPVOTE_URL)
-        let json = await votes.json()
-        return {
-            doc: response,
-            id: ctx.query.id,
-            page: ctx.query.page ? ctx.query.page : 1,
-            upvotes: json
-        }
-    }
     render() {
         return (
             <Flex flexDirection="column">
@@ -52,5 +30,28 @@ export default class extends React.Component {
                 </Flex>
             </Flex>
         )
+    }
+}
+export let getServerSideProps = async (ctx) => {
+    const response = await Client.query(
+        Prismic.Predicates.at("document.tags", [ctx.query.id]),
+        {
+            orderings: '[my.stories.date_created desc]',
+            pageSize: 5,
+            page: ctx.query.page ? ctx.query.page : 1
+        }
+    )
+    let upvotes = {}
+    for (let i = 0; i < response.results.length; i++) {
+        let votes = await local(response.results[i].id)
+        upvotes[response.results[i].id] = votes
+    }
+    return {
+        props: {
+            doc: response,
+            id: ctx.query.id,
+            page: ctx.query.page ? ctx.query.page : 1,
+            upvotes: upvotes
+        }
     }
 }
