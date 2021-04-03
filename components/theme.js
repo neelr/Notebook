@@ -6,9 +6,9 @@ export default {
     background: "#E0FBFC",
     primary: "#EE6C4D",
     secondary: "#98C1D9",
-    highlight: "#F4E04D",
+    highlight: "#fecb0a",
     accent: "#e8907a",
-    muted: "#65656c",
+    muted: "#3e4c6c",
     gray: "#D0D0DD",
     modes: {
       dark: {
@@ -17,7 +17,7 @@ export default {
         primary: "#EE6C4D",
         secondary: "#3D5A80",
         muted: "#D0D0DD",
-        highlight: "#F4E04D",
+        highlight: "#fecb0a",
         gray: "#D0D0DD",
         accent: "#e8907a",
       },

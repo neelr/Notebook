@@ -5,7 +5,7 @@ export default (props) => (
       style={{
         strokeWidth: "40px",
         fill: "transparent",
-        stroke: "#F4E04D",
+        stroke: "#fecb0a",
         strokeLinecap: "round",
         strokeLinejoin: "round",
       }}
