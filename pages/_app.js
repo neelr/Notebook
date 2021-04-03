@@ -7,7 +7,12 @@ import { Flex } from "theme-ui";
 export default function App({ Component, pageProps }) {
   return (
     <ThemeProvider theme={theme}>
-      <Flex minHeight="100vh" flexDirection="column">
+      <Flex
+        sx={{
+          minHeight: "100vh",
+          flexDirection: "column",
+        }}
+      >
         <Nav />
         <Component {...pageProps} />
         <Footer />

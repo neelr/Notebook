@@ -15,13 +15,14 @@ export default function Home({ featured, ...props }) {
     playbackRate: 0.8 + Math.abs(tilt) / 10,
     volume: 0.5,
   });
-  const [playHover] = useSound("/sounds/hover.mp3", {
+  const [playHover, { stop }] = useSound("/sounds/hover.mp3", {
     volume: 0.2,
   });
 
   let Post = ({ title, src, tags, desc, date, ...props }) => (
     <Column
       onMouseEnter={() => playHover()}
+      onMouseLeave={() => stop()}
       sx={{
         bg: "secondary",
         mx: "10px",
