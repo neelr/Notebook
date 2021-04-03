@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Heading } from "@theme-ui/components";
+import { Flex, Heading } from "theme-ui";
 import Head from "next/head";
 
 export default class extends React.Component {
