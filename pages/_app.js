@@ -16,6 +16,13 @@ export default function App({ Component, pageProps }) {
         <Nav />
         <Component {...pageProps} />
         <Footer />
+        <style jsx global>{`
+          .masonry-posts {
+            display: flex;
+            width: 100%;
+            max-width: 100%;
+          }
+        `}</style>
       </Flex>
     </ThemeProvider>
   );

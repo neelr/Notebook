@@ -6,7 +6,7 @@ export default {
     background: "#E0FBFC",
     primary: "#EE6C4D",
     secondary: "#98C1D9",
-    highlight: "#fecb0a",
+    highlight: "#EE6C4D",
     accent: "#e8907a",
     muted: "#3e4c6c",
     gray: "#D0D0DD",

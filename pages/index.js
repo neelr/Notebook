@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { Client } from "../prismic-configuration";
 import Prismic from "prismic-javascript";
 import { Text, Flex, Heading, Image } from "theme-ui";
-import Book from "@components/book";
-import Star from "@components/star";
+import Book from "@components/icons/book";
+import Star from "@components/icons/star";
 import useSound from "use-sound";
-import { Column, Section } from "@components/semantics";
+import { Column, Section, Boop } from "@components/semantics";
 import Head from "next/head";
 import { local } from "./api/get";
+import Clock from "@components/icons/clock";
+import Masonry from "react-masonry-css";
 
-export default function Home({ featured, ...props }) {
+export default function Home({ featured, docs, ...props }) {
   let [tilt, setTilt] = useState(-1);
   const [playGlug] = useSound("/sounds/glug-a.mp3", {
     playbackRate: 0.8 + Math.abs(tilt) / 10,
@@ -17,6 +19,9 @@ export default function Home({ featured, ...props }) {
   });
   const [playHover, { stop }] = useSound("/sounds/hover.mp3", {
     volume: 0.2,
+  });
+  const [playPop] = useSound("/sounds/pop.mp3", {
+    volume: 0.7,
   });
 
   let Post = ({ title, src, tags, desc, date, ...props }) => (
@@ -26,15 +31,13 @@ export default function Home({ featured, ...props }) {
       sx={{
         bg: "secondary",
         mx: "10px",
-        my: "5px",
-        boxShadow: "2px 2px #272838",
+        my: "10px",
+        boxShadow: "5px 5px #272838",
         transition: "all 0.2s",
         borderRadius: "2px",
         width: "300px",
         overflow: "hidden",
-        mb: "auto",
         ":hover": {
-          boxShadow: "5px 5px #272838",
           cursor: "pointer",
         },
       }}
@@ -75,6 +78,7 @@ export default function Home({ featured, ...props }) {
                 color: "highlight",
                 mx: "5px",
                 my: "2px",
+                fontWeight: "bold",
                 ":hover": {
                   color: "muted",
                   cursor: "pointer",
@@ -150,7 +154,12 @@ export default function Home({ featured, ...props }) {
             playGlug();
             setTilt(tilt - 3);
           }}
-          onMouseLeave={() => setTilt(-1)}
+          onMouseLeave={() => {
+            if (tilt < -5) {
+              playPop();
+            }
+            setTilt(-1);
+          }}
         >
           Notebook 3.0
         </Heading>
@@ -193,17 +202,84 @@ export default function Home({ featured, ...props }) {
             </Flex>
           </Flex>
         </Heading>
-        <Flex sx={{ flexDirection: "row", flexWrap: "wrap" }}>
+        <Masonry
+          breakpointCols={{
+            10000: 3,
+            1024: 2,
+            640: 1,
+            default: 1,
+          }}
+          className="masonry-posts"
+          columnClassName="masonry-posts-column"
+        >
           {featured.map((v) => (
-            <Post
-              title={v.data.title[0].text}
-              src={v.data.cover_image.url}
-              tags={v.tags}
-              desc={v.data.description[0].text}
-              date={v.data.date_created}
-            />
+            <Boop rotation="3">
+              <Post
+                title={v.data.title[0].text}
+                src={v.data.cover_image.url}
+                tags={v.tags}
+                desc={v.data.description[0].text}
+                date={v.data.date_created}
+              />
+            </Boop>
           ))}
-        </Flex>
+        </Masonry>
+      </Section>
+      <Section
+        sx={{
+          width: ["90vw", "85vw", "75vw"],
+          mx: "auto",
+        }}
+      >
+        <Heading
+          sx={{
+            fontSize: [3, 4, 5],
+            mr: "auto",
+            borderBottom: "5px solid highlight",
+            ml: "20px",
+            mb: "10px",
+          }}
+        >
+          <Flex>
+            Recent{" "}
+            <Flex
+              sx={{
+                height: "50px",
+                width: "50px",
+                stroke: "muted",
+                ml: "10px",
+                fill: "transparent",
+                "& > svg": {
+                  mb: "-10px",
+                },
+              }}
+            >
+              <Clock />
+            </Flex>
+          </Flex>
+        </Heading>
+        <Masonry
+          breakpointCols={{
+            10000: 3,
+            1024: 2,
+            640: 1,
+            default: 1,
+          }}
+          className="masonry-posts"
+          columnClassName="masonry-posts-column"
+        >
+          {docs.map((v) => (
+            <Boop rotation="3">
+              <Post
+                title={v.data.title[0].text}
+                src={v.data.cover_image.url}
+                tags={v.tags}
+                desc={v.data.description[0].text}
+                date={v.data.date_created}
+              />
+            </Boop>
+          ))}
+        </Masonry>
       </Section>
     </Flex>
   );

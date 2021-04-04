@@ -3,6 +3,7 @@ import Link from "next/link";
 import useSound from "use-sound";
 import { useColorMode } from "theme-ui";
 import { Sun, Moon } from "react-feather";
+import { Boop } from "./semantics";
 
 const NavLink = ({ sx, ...props }) => (
   <A
@@ -49,11 +50,6 @@ export default ({ sx, ...props }) => {
           position: "absolute",
           right: "10px",
           my: "auto",
-          ":hover": {
-            cursor: "pointer",
-            border: "2px solid",
-            color: "accent",
-          },
         }}
         onClick={() => {
           if (colorMode == "default") {
@@ -64,7 +60,9 @@ export default ({ sx, ...props }) => {
           setColorMode(colorMode === "default" ? "dark" : "default");
         }}
       >
-        {colorMode == "default" ? <Sun size={24} /> : <Moon size={24} />}
+        <Boop rotation="10">
+          {colorMode == "default" ? <Sun size={24} /> : <Moon size={24} />}
+        </Boop>
       </NavLink>
     </Flex>
   );

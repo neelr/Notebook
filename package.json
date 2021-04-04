@@ -27,6 +27,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.8",
+    "react-masonry-css": "^1.0.14",
+    "react-spring": "^9.0.0",
     "theme-ui": "^0.3.1",
     "use-sound": "^2.0.1"
   }
