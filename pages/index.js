@@ -10,95 +10,22 @@ import Head from "next/head";
 import { local } from "./api/get";
 import Clock from "@components/icons/clock";
 import Masonry from "react-masonry-css";
+import Post from "@components/post";
 
-export default function Home({ featured, docs, ...props }) {
+export default function Home({ featured, docs, upvotes, ...props }) {
   let [tilt, setTilt] = useState(-1);
   const [playGlug] = useSound("/sounds/glug-a.mp3", {
     playbackRate: 0.8 + Math.abs(tilt) / 10,
     volume: 0.5,
   });
-  const [playHover, { stop }] = useSound("/sounds/hover.mp3", {
-    volume: 0.2,
-  });
   const [playPop] = useSound("/sounds/pop.mp3", {
     volume: 0.7,
   });
-
-  let Post = ({ title, src, tags, desc, date, ...props }) => (
-    <Column
-      onMouseEnter={() => playHover()}
-      onMouseLeave={() => stop()}
-      sx={{
-        bg: "secondary",
-        mx: "10px",
-        my: "10px",
-        boxShadow: "5px 5px #272838",
-        transition: "all 0.2s",
-        borderRadius: "2px",
-        width: "300px",
-        overflow: "hidden",
-        ":hover": {
-          cursor: "pointer",
-        },
-      }}
-    >
-      <Image src={src} />
-      <Column
-        sx={{
-          mx: "30px",
-          my: "10px",
-        }}
-      >
-        <Heading>{title}</Heading>
-        <Text
-          sx={{
-            fontSize: 1,
-            color: "muted",
-            fontStyle: "italic",
-          }}
-        >
-          {date}
-        </Text>
-        <Text
-          sx={{
-            fontSize: 1,
-            color: "muted",
-          }}
-        >
-          {desc}
-        </Text>
-        <Flex
-          sx={{
-            flexWrap: "wrap",
-          }}
-        >
-          {tags.map((v) => (
-            <Text
-              sx={{
-                color: "highlight",
-                mx: "5px",
-                my: "2px",
-                fontWeight: "bold",
-                ":hover": {
-                  color: "muted",
-                  cursor: "pointer",
-                },
-              }}
-            >
-              #{v}
-            </Text>
-          ))}
-        </Flex>
-      </Column>
-    </Column>
-  );
-
-  console.log(props);
   return (
     <Flex sx={{ flexDirection: "column" }}>
       <Head>
-        <title>Notebook v2.0</title>
-        <meta property="og:title" content="Notebook v2.0" />
+        <title>Notebook v3.0</title>
+        <meta property="og:title" content="Notebook v3.0" />
         <meta
           property="og:image"
           content="http://notebook.neelr.dev/openg.png"
@@ -280,11 +207,13 @@ export default function Home({ featured, docs, ...props }) {
             </Boop>
           ))}
         </Masonry>
+        [ {JSON.stringify(upvotes)}]
       </Section>
     </Flex>
   );
 }
 export async function getStaticProps(ctx) {
+  console.log("EEE");
   let response = await Client.query(
     Prismic.Predicates.at("document.type", "stories"),
     {
@@ -300,12 +229,11 @@ export async function getStaticProps(ctx) {
   }
   let docs = response.results.filter((v) => !v.tags.includes("featured"));
   let featured = response.results.filter((v) => v.tags.includes("featured"));
-  console.log(featured);
   return {
     props: {
       docs,
       featured,
-      upvotes: upvotes,
+      upvotes,
     },
     revalidate: 10,
   };

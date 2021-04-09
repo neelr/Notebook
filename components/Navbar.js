@@ -22,7 +22,7 @@ const NavLink = ({ sx, ...props }) => (
   />
 );
 
-export default ({ sx, ...props }) => {
+export default function NavBar({ sx, ...props }) {
   const [colorMode, setColorMode] = useColorMode();
   const [switchOn] = useSound("/sounds/switch-on.mp3");
   const [switchOff] = useSound("/sounds/switch-off.mp3");
@@ -35,9 +35,9 @@ export default ({ sx, ...props }) => {
       }}
       {...props}
     >
-      <NavLink m="auto" href="/">
-        My Notebook
-      </NavLink>
+      <Link href="/">
+        <NavLink m="auto">My Notebook</NavLink>
+      </Link>
       <NavLink
         sx={{
           boxSizing: "border-box",
@@ -66,4 +66,4 @@ export default ({ sx, ...props }) => {
       </NavLink>
     </Flex>
   );
-};
+}
