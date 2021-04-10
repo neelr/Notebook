@@ -8,7 +8,7 @@ import { local } from "../api/get";
 import Masonry from "react-masonry-css";
 import Post from "@components/post";
 
-export default function Tags({ docs, id, ...props }) {
+export default function Tags({ docs, id, upvotes, ...props }) {
   return (
     <Flex sx={{ flexDirection: "column" }}>
       <Head>
@@ -58,6 +58,8 @@ export default function Tags({ docs, id, ...props }) {
                 tags={v.tags}
                 desc={v.data.description[0].text}
                 date={v.data.date_created}
+                votes={upvotes[v.id]}
+                slug={v.slugs[0]}
               />
             </Boop>
           ))}

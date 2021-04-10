@@ -1,0 +1,315 @@
+/** @jsx jsx */
+import { jsx } from "theme-ui";
+import { Client } from "../../prismic-configuration";
+import Prismic from "prismic-javascript";
+import marked from "marked";
+import { Text, Flex, Heading, Image, Link as RebassLink } from "theme-ui";
+import Link from "next/link";
+import { RichText, Elements } from "prismic-reactjs";
+import Head from "next/head";
+import { Star } from "react-feather";
+import fetch from "isomorphic-unfetch";
+import { local } from "../api/get";
+import fs from "fs/promises";
+var htmlSerializer = function (type, element, content, children) {
+  switch (type) {
+    case Elements.paragraph:
+      return <Text sx={{ my: "5px" }}>{children}</Text>;
+    case Elements.hyperlink:
+      return <A href={element.data.target}>{children}</A>;
+    case Elements.heading1:
+      return (
+        <Text
+          sx={{
+            mb: "5px",
+            mt: "20px",
+            textDecoration: "underline",
+            textDecorationStyle: "wavy",
+          }}
+          as="h1"
+        >
+          {children}
+        </Text>
+      );
+    case Elements.heading2:
+      return (
+        <Text
+          sx={{
+            mb: "5px",
+            mt: "20px",
+            textDecoration: "underline",
+            textDecorationStyle: "wavy",
+          }}
+          as="h2"
+        >
+          {children}
+        </Text>
+      );
+    case Elements.heading3:
+      return (
+        <Text
+          sx={{
+            mb: "5px",
+            mt: "20px",
+            textDecoration: "underline",
+            textDecorationStyle: "wavy",
+          }}
+          as="h3"
+        >
+          {children}
+        </Text>
+      );
+    case Elements.heading4:
+      return (
+        <Text
+          sx={{
+            mb: "5px",
+            mt: "20px",
+            textDecoration: "underline",
+            textDecorationStyle: "wavy",
+          }}
+          as="h4"
+        >
+          {children}
+        </Text>
+      );
+    case Elements.heading5:
+      return (
+        <Text
+          sx={{
+            mb: "5px",
+            mt: "20px",
+            textDecoration: "underline",
+            textDecorationStyle: "wavy",
+          }}
+          as="h5"
+        >
+          {children}
+        </Text>
+      );
+    case Elements.heading6:
+      return (
+        <Text
+          sx={{
+            mb: "5px",
+            mt: "20px",
+            textDecoration: "underline",
+            textDecorationStyle: "wavy",
+          }}
+          as="h6"
+        >
+          {children}
+        </Text>
+      );
+    default:
+      return null;
+  }
+};
+const A = ({ sx, ...props }) => (
+  <RebassLink
+    sx={{
+      color: "primary",
+
+      textDecoration: "underline",
+
+      textDecorationStyle: "wavy",
+
+      ":hover": {
+        color: "secondary",
+
+        cursor: "pointer",
+      },
+
+      ...sx,
+    }}
+    {...props}
+  />
+);
+
+export default function Story({ id, story, ...props }) {
+  let upvote = () => {
+    if (!this.state.starColor) {
+      this.setState({ starColor: "gold", votes: 1 });
+      fetch("/api/upvote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+    }
+  };
+  return (
+    <Flex
+      sx={{
+        flexDirection: "column",
+        width: ["90vw", "80vw", "60vw"],
+        mx: "auto",
+      }}
+    >
+      <Flex
+        sx={{
+          flexWrap: "wrap",
+        }}
+      >
+        {story.tags.map((v) => (
+          <Link href={`/tags/${v}`}>
+            <Text
+              sx={{
+                color: "highlight",
+                mx: "5px",
+                my: "2px",
+                fontStyle: "italic",
+                fontWeight: "bold",
+                ":hover": {
+                  color: "muted",
+                  cursor: "pointer",
+                },
+              }}
+            >
+              #{v}
+            </Text>
+          </Link>
+        ))}
+      </Flex>
+      <Heading sx={{ fontSize: [4, 5, 6] }}>
+        {RichText.asText(story.data.title)}
+      </Heading>
+      <Text
+        sx={{
+          color: "muted",
+          fontStyle: "italic",
+        }}
+      >
+        {story.data.date_created} ·{" "}
+        {Math.round(
+          story.data.body1
+            .map((v) => RichText.asText(v.primary[v.slice_type]))
+            .join(" ")
+            .split(" ").length / 200
+        )}{" "}
+        min read
+      </Text>
+      <Text
+        sx={{
+          color: "muted",
+          width: "90%",
+          fontStyle: "italic",
+        }}
+      >
+        {RichText.asText(story.data.description)}
+      </Text>
+      <Image sx={{ my: "20px" }} src={story.data.cover_image.url} />
+      {story.data.body1.map((slice) =>
+        slice.slice_type == "html" ? (
+          <Flex
+            sx={{
+              flexDirection: "column",
+              blockquote: {
+                fontStyle: "italic",
+                borderLeft: "5px solid red",
+                pl: "15px",
+              },
+
+              code: {
+                bg: "highlight",
+                color: "orange",
+                p: "5px",
+              },
+
+              p: {
+                my: "5px",
+              },
+
+              a: {
+                color: "primary",
+
+                textDecoration: "underline",
+
+                textDecorationStyle: "wavy",
+
+                ":hover": {
+                  color: "secondary",
+
+                  cursor: "pointer",
+                },
+              },
+
+              "h1,h2,h3,h4,h5,h6": {
+                mb: "5px",
+                mt: "20px",
+                textDecoration: "underline",
+                textDecorationStyle: "wavy",
+              },
+            }}
+            dangerouslySetInnerHTML={{
+              __html: marked(RichText.asText(slice.primary.html)),
+            }}
+          />
+        ) : (
+          <RichText
+            render={slice.primary.text}
+            htmlSerializer={htmlSerializer}
+          />
+        )
+      )}
+    </Flex>
+  );
+}
+
+export let getStaticPaths = async (ctx) => {
+  let response = await Client.query(
+    Prismic.Predicates.at("document.type", "stories"),
+    {
+      orderings: "[my.stories.date_created desc]",
+      pageSize: 1500,
+      page: 1,
+    }
+  );
+  let upvotes = {};
+  for (let i = 0; i < response.results.length; i++) {
+    let votes = await local(response.results[i].id);
+    upvotes[response.results[i].id] = votes;
+  }
+  let slugs = {};
+  response.results.forEach((v) => {
+    slugs[v.slugs[0]] = v.id;
+  });
+  await fs.writeFile("./id_cache.json", JSON.stringify(slugs));
+
+  return {
+    paths: response.results.map((v) => {
+      return { params: { slug: v.slugs[0] } };
+    }),
+    fallback: true,
+  };
+};
+export let getStaticProps = async ({ params }) => {
+  let ids = JSON.parse(await fs.readFile("./id_cache.json"));
+
+  let id = "";
+  if (Object.keys(ids).includes(params.slug)) {
+    id = ids[params.slug];
+  } else {
+    let response = await Client.query(
+      Prismic.Predicates.at("document.type", "stories"),
+      {
+        orderings: "[my.stories.date_created desc]",
+        pageSize: 1500,
+        page: 1,
+      }
+    );
+    let slugs = {};
+    response.results.forEach((v) => {
+      slugs[v.slugs[0]] = v.id;
+    });
+    id = slugs[params.slug];
+  }
+
+  const response = await Client.getByID(id);
+  let stars = await local(id);
+
+  return { props: { story: response, votes: stars, id }, revalidate: 30 };
+};

@@ -40,14 +40,21 @@ export const Column = ({ sx, ...props }) => (
     {...props}
   />
 );
-export const Boop = ({ rotation = 0, timing = 150, children }) => {
+export const Boop = ({
+  rotation = 0,
+  timing = 150,
+  clicky = false,
+  tension = 300,
+  onClick = () => {},
+  children,
+}) => {
   const [isBooped, setIsBooped] = React.useState(false);
   const style = useSpring({
     display: "inline-block",
     backfaceVisibility: "hidden",
     transform: isBooped ? `rotate(${rotation}deg)` : `rotate(0deg)`,
     config: {
-      tension: 300,
+      tension,
       friction: 10,
     },
   });
@@ -66,7 +73,16 @@ export const Boop = ({ rotation = 0, timing = 150, children }) => {
     setIsBooped(true);
   };
   return (
-    <animated.span onMouseEnter={trigger} style={style}>
+    <animated.span
+      onMouseEnter={() => {
+        if (!clicky) trigger();
+      }}
+      onClick={() => {
+        if (clicky) trigger();
+        onClick();
+      }}
+      style={style}
+    >
       {children}
     </animated.span>
   );

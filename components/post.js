@@ -1,9 +1,8 @@
 import { Column } from "./semantics";
-import { Text, Flex, Heading, Image } from "theme-ui";
+import { Text, Flex, Heading, Image, Link as A } from "theme-ui";
 import useSound from "use-sound";
 import Link from "next/link";
 import { Heart } from "react-feather";
-import upvote from "pages/api/upvote";
 
 export default function Post({
   title,
@@ -12,95 +11,107 @@ export default function Post({
   desc,
   date,
   votes,
+  slug,
   ...props
 }) {
   const [playHover, { stop }] = useSound("/sounds/hover.mp3", {
     volume: 0.2,
   });
   return (
-    <Column
-      onMouseEnter={() => playHover()}
-      onMouseLeave={() => stop()}
+    <A
       sx={{
-        bg: "secondary",
-        mx: "10px",
-        my: "10px",
-        boxShadow: "5px 5px #272838",
-        transition: "all 0.2s",
-        borderRadius: "2px",
-        width: "300px",
-        overflow: "hidden",
+        textDecoration: "none",
+        color: "text",
         ":hover": {
-          cursor: "pointer",
+          color: "text",
         },
       }}
+      href={`/stories/${slug}`}
     >
-      <Image src={src} />
       <Column
+        onMouseEnter={() => playHover()}
+        onMouseLeave={() => stop()}
         sx={{
-          mx: "30px",
+          bg: "secondary",
+          mx: "10px",
           my: "10px",
+          boxShadow: "5px 5px #272838",
+          transition: "all 0.2s",
+          borderRadius: "2px",
+          width: "300px",
+          overflow: "hidden",
+          ":hover": {
+            cursor: "pointer",
+          },
         }}
       >
-        <Heading>{title}</Heading>
-        <Text
+        <Image src={src} />
+        <Column
           sx={{
-            fontSize: 1,
-            color: "muted",
-            fontStyle: "italic",
+            mx: "30px",
+            my: "10px",
           }}
         >
-          {date}
-        </Text>
-        <Text
-          sx={{
-            fontSize: 1,
-            color: "muted",
-          }}
-        >
-          {desc}
-        </Text>
-        <Flex
-          sx={{
-            flexWrap: "wrap",
-          }}
-        >
-          {tags.map((v) => (
-            <Link href={`/tags/${v}`}>
-              <Text
-                sx={{
-                  color: "highlight",
-                  mx: "5px",
-                  my: "2px",
-                  fontWeight: "bold",
-                  ":hover": {
-                    color: "muted",
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                #{v}
-              </Text>
-            </Link>
-          ))}
-        </Flex>
-        <Flex
-          sx={{
-            mt: "5px",
-            ml: "auto",
-            color: "pink",
-          }}
-        >
-          {votes ? votes : 0}
-          <Heart
-            size={24}
-            style={{
-              marginLeft: 10,
-              fill: "pink",
+          <Heading>{title}</Heading>
+          <Text
+            sx={{
+              fontSize: 1,
+              color: "muted",
+              fontStyle: "italic",
             }}
-          />
-        </Flex>
+          >
+            {date}
+          </Text>
+          <Text
+            sx={{
+              fontSize: 1,
+              color: "muted",
+            }}
+          >
+            {desc}
+          </Text>
+          <Flex
+            sx={{
+              flexWrap: "wrap",
+            }}
+          >
+            {tags.map((v) => (
+              <Link href={`/tags/${v}`}>
+                <Text
+                  sx={{
+                    color: "highlight",
+                    mx: "5px",
+                    my: "2px",
+                    fontWeight: "bold",
+                    ":hover": {
+                      color: "muted",
+                      cursor: "pointer",
+                    },
+                  }}
+                >
+                  #{v}
+                </Text>
+              </Link>
+            ))}
+          </Flex>
+          <Flex
+            sx={{
+              mt: "5px",
+              ml: "auto",
+              color: "pink",
+            }}
+          >
+            {votes ? votes : 0}
+            <Heart
+              size={24}
+              style={{
+                marginLeft: 10,
+                fill: "pink",
+              }}
+            />
+          </Flex>
+        </Column>
       </Column>
-    </Column>
+    </A>
   );
 }

@@ -11,6 +11,7 @@ import { local } from "./api/get";
 import Clock from "@components/icons/clock";
 import Masonry from "react-masonry-css";
 import Post from "@components/post";
+import Link from "next/link";
 
 export default function Home({ featured, docs, upvotes, ...props }) {
   let [tilt, setTilt] = useState(-1);
@@ -139,17 +140,21 @@ export default function Home({ featured, docs, upvotes, ...props }) {
           className="masonry-posts"
           columnClassName="masonry-posts-column"
         >
-          {featured.map((v) => (
-            <Boop rotation="3">
-              <Post
-                title={v.data.title[0].text}
-                src={v.data.cover_image.url}
-                tags={v.tags}
-                desc={v.data.description[0].text}
-                date={v.data.date_created}
-              />
-            </Boop>
-          ))}
+          {featured.map((v) => {
+            return (
+              <Boop rotation="3">
+                <Post
+                  title={v.data.title[0].text}
+                  src={v.data.cover_image.url}
+                  tags={v.tags}
+                  desc={v.data.description[0].text}
+                  date={v.data.date_created}
+                  votes={upvotes[v.id]}
+                  slug={v.slugs[0]}
+                />
+              </Boop>
+            );
+          })}
         </Masonry>
       </Section>
       <Section
@@ -203,11 +208,12 @@ export default function Home({ featured, docs, upvotes, ...props }) {
                 tags={v.tags}
                 desc={v.data.description[0].text}
                 date={v.data.date_created}
+                votes={upvotes[v.id]}
+                slug={v.slugs[0]}
               />
             </Boop>
           ))}
         </Masonry>
-        [ {JSON.stringify(upvotes)}]
       </Section>
     </Flex>
   );

@@ -1,4 +1,4 @@
-import { Flex, Text, Link as A } from "@theme-ui/components";
+import { Flex, Text, Link as A, Image } from "@theme-ui/components";
 import Link from "next/link";
 import useSound from "use-sound";
 import { useColorMode } from "theme-ui";
@@ -26,6 +26,9 @@ export default function NavBar({ sx, ...props }) {
   const [colorMode, setColorMode] = useColorMode();
   const [switchOn] = useSound("/sounds/switch-on.mp3");
   const [switchOff] = useSound("/sounds/switch-off.mp3");
+  const [playPop] = useSound("/sounds/pop.mp3", {
+    volume: 0.7,
+  });
   return (
     <Flex
       sx={{
@@ -35,6 +38,29 @@ export default function NavBar({ sx, ...props }) {
       }}
       {...props}
     >
+      <Flex
+        sx={{
+          position: "absolute",
+          left: 20,
+          width: "40px",
+          my: "auto",
+          overflow: "hidden",
+        }}
+        href="https://neelr.dev"
+        as="a"
+      >
+        <Boop onClick={playPop} rotation="30" tension={1500} clicky>
+          <Image
+            sx={{
+              borderRadius: "40px",
+              ":hover": {
+                cursor: "pointer",
+              },
+            }}
+            src="https://neelr.dev/static/self.jpg"
+          />
+        </Boop>
+      </Flex>
       <Link href="/">
         <NavLink m="auto">My Notebook</NavLink>
       </Link>
