@@ -3,3 +3,4 @@ node_modules
 next.config.js
 .now
 components/auth.json
+id_cache.json
