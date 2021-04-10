@@ -27,7 +27,7 @@ export default function NavBar({ sx, ...props }) {
   const [switchOn] = useSound("/sounds/switch-on.mp3");
   const [switchOff] = useSound("/sounds/switch-off.mp3");
   const [playPop, { stop }] = useSound("/sounds/boing.mp3", {
-    volume: 0.2,
+    volume: 0.5,
     sprite: {
       main: [20, 1570],
     },
