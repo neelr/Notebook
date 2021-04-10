@@ -26,8 +26,11 @@ export default function NavBar({ sx, ...props }) {
   const [colorMode, setColorMode] = useColorMode();
   const [switchOn] = useSound("/sounds/switch-on.mp3");
   const [switchOff] = useSound("/sounds/switch-off.mp3");
-  const [playPop] = useSound("/sounds/pop.mp3", {
-    volume: 0.7,
+  const [playPop, { stop }] = useSound("/sounds/boing.mp3", {
+    volume: 0.2,
+    sprite: {
+      main: [20, 1570],
+    },
   });
   return (
     <Flex
@@ -47,9 +50,11 @@ export default function NavBar({ sx, ...props }) {
           overflow: "hidden",
         }}
         href="https://neelr.dev"
+        onMouseEnter={() => playPop({ id: "main" })}
+        onMouseLeave={stop}
         as="a"
       >
-        <Boop onClick={playPop} rotation="30" tension={1500} clicky>
+        <Boop rotation="30" tension={1500}>
           <Image
             sx={{
               borderRadius: "40px",

@@ -36,7 +36,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
           content="A nice way to jot down thoughts, ideas, or articles I have!"
         />
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:title" content="Notebook v2.0" />
+        <meta property="twitter:title" content="Notebook v3.0" />
         <meta
           property="twiter:image"
           content="http://notebook.neelr.dev/openg.png"
