@@ -45,6 +45,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
           property="twitter:description"
           content="A nice way to jot down thoughts, ideas, or articles I have!"
         />
+        <script src='https://analytics.stacc.cc/api/script/v925J2qMyDZV'></script>
       </Head>
       <Section>
         <Column

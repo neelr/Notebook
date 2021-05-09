@@ -3,6 +3,7 @@ import theme from "../components/theme";
 import Nav from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Flex } from "theme-ui";
+import Head from "next/head";
 
 export default function App({ Component, pageProps }) {
   return (
@@ -13,6 +14,9 @@ export default function App({ Component, pageProps }) {
           flexDirection: "column",
         }}
       >
+        <Head>
+          <script src="https://analytics.stacc.cc/api/script/v925J2qMyDZV"></script>
+        </Head>
         <Nav />
         <Component {...pageProps} />
         <Footer />

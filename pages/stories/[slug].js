@@ -26,7 +26,11 @@ var htmlSerializer = function (type, element, content, children) {
     case Elements.paragraph:
       return <Text sx={{ my: "5px" }}>{children}</Text>;
     case Elements.hyperlink:
-      return <A href={element.data.target}>{children}</A>;
+      return (
+        <A href={element.data.url} target="_blank">
+          {children}
+        </A>
+      );
     case Elements.heading1:
       return (
         <Text
@@ -486,12 +490,27 @@ export let getStaticPaths = async (ctx) => {
   };
 };
 export let getStaticProps = async ({ params }) => {
-  let ids = JSON.parse(await fs.readFile("./id_cache.json"));
-
-  let id = "";
-  if (Object.keys(ids).includes(params.slug)) {
-    id = ids[params.slug];
-  } else {
+  let id;
+  try {
+    let ids = JSON.parse(await fs.readFile("./id_cache.json"));
+    if (Object.keys(ids).includes(params.slug)) {
+      id = ids[params.slug];
+    } else {
+      let response = await Client.query(
+        Prismic.Predicates.at("document.type", "stories"),
+        {
+          orderings: "[my.stories.date_created desc]",
+          pageSize: 1500,
+          page: 1,
+        }
+      );
+      let slugs = {};
+      response.results.forEach((v) => {
+        slugs[v.slugs[0]] = v.id;
+      });
+      id = slugs[params.slug];
+    }
+  } catch {
     let response = await Client.query(
       Prismic.Predicates.at("document.type", "stories"),
       {
