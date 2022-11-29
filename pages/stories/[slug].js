@@ -20,6 +20,7 @@ import { useState } from "react";
 import useSound from "use-sound";
 import { Boop } from "@components/semantics";
 import theme from "@components/theme";
+import rss from "rss-generator";
 
 var htmlSerializer = function (type, element, content, children) {
   switch (type) {
@@ -481,6 +482,29 @@ export let getStaticPaths = async (ctx) => {
     slugs[v.slugs[0]] = v.id;
   });
   await fs.writeFile("./id_cache.json", JSON.stringify(slugs));
+  let rssFeed = new rss({
+    title: "My Notebook",
+    description:
+      "A fun place to jot down my thoughts and ideas! You'll find everything from my favorite music to political thoughts! Have a stroll, and stay a while!",
+    feed_url: "https://notebook.neelr.dev/feed.rss",
+    site_url: "https://notebook.neelr.dev",
+    managingEditor: "Neel Redkar",
+    language: "en",
+    categories: ["Tech", "Notebook", "Politics", "Philosophy"],
+    pubDate: new Date().toUTCString(),
+    ttl: "60",
+  });
+  response.results.forEach((v) => {
+    rssFeed.item({
+      title: RichText.asText(v.data.title),
+      description: RichText.asText(v.data.description),
+      url: `https://notebook.neelr.dev/stories/${v.slugs[0]}`,
+      guid: v.id,
+      tags: v.tags,
+      date: v.data.date_created,
+    });
+  });
+  await fs.writeFile("./public/feed.rss", rssFeed.xml());
 
   return {
     paths: response.results.map((v) => {
