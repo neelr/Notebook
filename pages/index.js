@@ -220,7 +220,6 @@ export default function Home({ featured, docs, upvotes, ...props }) {
   );
 }
 export async function getStaticProps(ctx) {
-  console.log("EEE");
   let response = await Client.query(
     Prismic.Predicates.at("document.type", "stories"),
     {

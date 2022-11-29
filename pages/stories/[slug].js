@@ -500,8 +500,8 @@ export let getStaticPaths = async (ctx) => {
       description: RichText.asText(v.data.description),
       url: `https://notebook.neelr.dev/stories/${v.slugs[0]}`,
       guid: v.id,
-      tags: v.tags,
       date: v.data.date_created,
+      categories: v.tags,
     });
   });
   await fs.writeFile("./public/feed.rss", rssFeed.xml());
