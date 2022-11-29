@@ -1,11 +1,10 @@
 import * as admin from "firebase-admin";
-import config from "../../components/auth.json";
-try {
+import config from "../../components/auth.js";
+console.log(config)
   admin.initializeApp({
     credential: admin.credential.cert(config),
     databaseURL: "https://notebook-72b94.firebaseio.com",
   });
-} catch {}
 
 export const local = async (id) => {
   let snap = await admin.firestore().collection("stars").doc(id).get();

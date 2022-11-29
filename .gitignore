@@ -4,3 +4,7 @@ next.config.js
 .now
 components/auth.json
 id_cache.json
+.vercel
+public/feed.rss
+.env.local
+.env
