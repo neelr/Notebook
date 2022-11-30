@@ -502,6 +502,19 @@ export let getStaticPaths = async (ctx) => {
       guid: v.id,
       date: v.data.date_created,
       categories: v.tags,
+      custom_elements: [
+        {
+          "media:content": {
+            _attr: {
+              url: v.data.cover_image.url,
+              medium: "image",
+            },
+          },
+        },
+        {
+          "stars:count": upvotes[v.id],
+        }
+      ],
     });
   });
   await fs.writeFile("./public/feed.rss", rssFeed.xml());
