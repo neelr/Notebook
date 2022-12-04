@@ -21,6 +21,7 @@ import useSound from "use-sound";
 import { Boop } from "@components/semantics";
 import theme from "@components/theme";
 import rss from "rss-generator";
+import { motion, useScroll } from "framer-motion/dist/framer-motion";
 
 var htmlSerializer = function (type, element, content, children) {
   switch (type) {
@@ -142,6 +143,7 @@ const A = ({ sx, ...props }) => (
 );
 
 export default function Story({ id, story, votes, ...props }) {
+  const { scrollYProgress } = useScroll();
   let [count, setCount] = useState(false);
   const [colorMode, setColorMode] = useColorMode();
   const [playBell] = useSound("/sounds/bell.mp3", {
@@ -265,6 +267,19 @@ export default function Story({ id, story, votes, ...props }) {
         mx: "auto",
       }}
     >
+      <Flex sx={{
+        position: "fixed",
+        top: "0",
+        left: "0",
+        width:"100vw",
+        height: "10px",
+      }}>
+      <motion.div
+        style={{ scaleX: scrollYProgress, transformOrigin: "left", width:"100vw", mr: "auto", background: colorMode == "default"
+        ? theme.colors.primary
+        : theme.colors.modes.dark.primary}}
+        />
+      </Flex>
       <Head>
         <title>{RichText.asText(story.data.title)}</title>
         <meta property="og:title" content={RichText.asText(story.data.title)} />
