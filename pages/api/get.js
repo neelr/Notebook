@@ -16,20 +16,20 @@ export const local = async (id) => {
 };
 
 export default async (req, res) => {
-  if (req.body.id) {
-    admin
+  // check if request is valid
+  if (req.method === "POST") {
+    // get the id from the request
+    const id = req.body.id;
+    // get the stars from the database
+    let snap = await admin
       .firestore()
       .collection("stars")
       .doc(req.body.id)
-      .get()
-      .then((snap) => {
-        console.log(id);
-        console.log(snap.data());
-        if (!snap.exists) {
-          res.send({ stars: 0 });
-          return;
-        }
-        res.send({ stars: snap.data().stars });
-      });
+      .get();
+    if (!snap.exists) {
+      res.send({ stars: 0 });
+      return;
+    }
+    res.send({ stars: snap.data().stars });
   }
 };
