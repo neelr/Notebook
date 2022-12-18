@@ -542,7 +542,10 @@ export let getStaticPaths = async (ctx) => {
     });
   });
   await fs.writeFile("./public/feed.rss", rssFeed.xml());
-  await fs.writeFile("./public/feed_first5.rss", rssFeed.xml({ limit: 5 }));
+  await fs.writeFile(
+    "./public/feed_first5.json",
+    JSON.stringify(response.results.slice(0, 5))
+  );
 
   return {
     paths: response.results.map((v) => {
