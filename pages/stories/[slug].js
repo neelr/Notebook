@@ -267,17 +267,26 @@ export default function Story({ id, story, votes, ...props }) {
         mx: "auto",
       }}
     >
-      <Flex sx={{
-        position: "fixed",
-        top: "0",
-        left: "0",
-        width:"100vw",
-        height: "10px",
-      }}>
-      <motion.div
-        style={{ scaleX: scrollYProgress, transformOrigin: "left", width:"100vw", mr: "auto", background: colorMode == "default"
-        ? theme.colors.primary
-        : theme.colors.modes.dark.primary}}
+      <Flex
+        sx={{
+          position: "fixed",
+          top: "0",
+          left: "0",
+          width: "100vw",
+          height: "10px",
+        }}
+      >
+        <motion.div
+          style={{
+            scaleX: scrollYProgress,
+            transformOrigin: "left",
+            width: "100vw",
+            mr: "auto",
+            background:
+              colorMode == "default"
+                ? theme.colors.primary
+                : theme.colors.modes.dark.primary,
+          }}
         />
       </Flex>
       <Head>
@@ -528,11 +537,12 @@ export let getStaticPaths = async (ctx) => {
         },
         {
           "stars:count": upvotes[v.id],
-        }
+        },
       ],
     });
   });
   await fs.writeFile("./public/feed.rss", rssFeed.xml());
+  await fs.writeFile("./public/feed_first5.rss", rssFeed.xml({ limit: 5 }));
 
   return {
     paths: response.results.map((v) => {
