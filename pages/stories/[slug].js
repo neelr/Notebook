@@ -544,7 +544,20 @@ export let getStaticPaths = async (ctx) => {
   await fs.writeFile("./public/feed.rss", rssFeed.xml());
   await fs.writeFile(
     "./public/feed_first5.json",
-    JSON.stringify(response.results.slice(0, 5))
+    JSON.stringify(
+      response.results.slice(0, 5).map((v) => {
+        return {
+          title: RichText.asText(v.data.title),
+          description: RichText.asText(v.data.description),
+          url: `https://notebook.neelr.dev/stories/${v.slugs[0]}`,
+          guid: v.id,
+          date: v.data.date_created,
+          categories: v.tags,
+          image: v.data.cover_image.url,
+          upvotes: upvotes[v.id],
+        };
+      })
+    )
   );
 
   return {
