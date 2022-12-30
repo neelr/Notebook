@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/neelr/notebook#readme",
   "dependencies": {
+    "@vercel/analytics": "^0.1.6",
     "firebase-admin": "^9.6.0",
     "framer-motion": "^7.6.18",
     "isomorphic-unfetch": "^3.1.0",

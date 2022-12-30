@@ -4,10 +4,12 @@ import Nav from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Flex } from "theme-ui";
 import Head from "next/head";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function App({ Component, pageProps }) {
   return (
     <ThemeProvider theme={theme}>
+      <Analytics />
       <Flex
         sx={{
           minHeight: "100vh",
