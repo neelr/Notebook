@@ -1,10 +1,11 @@
+import { Analytics } from "@vercel/analytics/dist/react";
 import { ThemeProvider } from "theme-ui";
 import theme from "../components/theme";
 import Nav from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Flex } from "theme-ui";
 import Head from "next/head";
-import { Analytics } from "@vercel/analytics/react";
+import { useEffect } from "react";
 
 export default function App({ Component, pageProps }) {
   return (
