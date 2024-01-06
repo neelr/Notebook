@@ -66,7 +66,7 @@ export default function NavBar({ sx, ...props }) {
           />
         </Boop>
       </Flex>
-      <Link href="/">
+      <Link href="/" legacyBehavior>
         <NavLink m="auto">My Notebook</NavLink>
       </Link>
       <NavLink

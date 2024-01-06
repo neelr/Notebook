@@ -18,10 +18,10 @@ import { local } from "../api/get";
 import fs from "fs/promises";
 import { useState } from "react";
 import useSound from "use-sound";
-import { Boop } from "@components/semantics";
+import { Boop, slugify } from "@components/semantics";
 import theme from "@components/theme";
 import rss from "rss-generator";
-import { motion, useScroll } from "framer-motion/dist/framer-motion";
+import { useScroll, motion } from "framer-motion";
 
 var htmlSerializer = function (type, element, content, children) {
   switch (type) {
@@ -318,7 +318,7 @@ export default function Story({ id, story, votes, ...props }) {
         }}
       >
         {story.tags.map((v) => (
-          <Link href={`/tags/${v}`}>
+          <Link href={`/tags/${v}`} legacyBehavior>
             <Text
               sx={{
                 color: "highlight",
@@ -496,6 +496,11 @@ export let getStaticPaths = async (ctx) => {
       page: 1,
     }
   );
+  response.results = response.results.map((v) => {
+    v.slugs = [slugify(RichText.asText(v.data.title))];
+    return v;
+  });
+
   let upvotes = {};
   for (let i = 0; i < response.results.length; i++) {
     let votes = await local(response.results[i].id);

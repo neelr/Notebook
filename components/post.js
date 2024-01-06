@@ -76,7 +76,7 @@ export default function Post({
             }}
           >
             {tags.map((v) => (
-              <Link href={`/tags/${v}`}>
+              <Link href={`/tags/${v}`} legacyBehavior>
                 <Text
                   sx={{
                     color: "highlight",

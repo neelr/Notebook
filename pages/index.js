@@ -5,7 +5,7 @@ import { Text, Flex, Heading, Image } from "theme-ui";
 import Book from "@components/icons/book";
 import Star from "@components/icons/star";
 import useSound from "use-sound";
-import { Column, Section, Boop } from "@components/semantics";
+import { Column, Section, Boop, slugify } from "@components/semantics";
 import Head from "next/head";
 import { local } from "./api/get";
 import Clock from "@components/icons/clock";
@@ -151,7 +151,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
                   desc={v.data.description[0].text}
                   date={v.data.date_created}
                   votes={upvotes[v.id]}
-                  slug={v.slugs[0]}
+                  slug={slugify(v.data.title[0].text)}
                 />
               </Boop>
             );
