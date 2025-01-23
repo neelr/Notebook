@@ -150,7 +150,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
                 desc={v.description}
                 date={v.dateCreated}
                 votes={upvotes[v.id]}
-                slug={slugify(v.slug)}
+                slug={v.slug}
               />
             );
           })}

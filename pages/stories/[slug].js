@@ -369,12 +369,7 @@ export async function getStaticPaths() {
     // Fetch all stories from Notion
     const { results } = await notionClient.query({}, { page_size: 1500 });
 
-    // Add slugs to results
-    const processedResults = results.map((story) => ({
-      ...story,
-      slug: slugify(story.title.toLowerCase()),
-    }));
-
+    const processedResults = results;
     // Create id cache mapping
     const slugs = {};
     processedResults.forEach((story) => {
