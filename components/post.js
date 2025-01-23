@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { Column } from "./semantics";
 import { Text, Flex, Heading, Image, Link as A, Box } from "theme-ui";
 import useSound from "use-sound";
@@ -116,10 +117,29 @@ export default function Post({
   );
 }
 
+const hoverColors = [
+  "rgb(255, 45, 83)", // Hot magenta - vintage neon
+  "rgb(0, 255, 163)", // Cyber green - CRT phosphor
+  "rgb(255, 179, 0)", // Nuclear yellow - warning screens
+  "rgb(66, 230, 255)", // Plasma blue - old sci-fi
+  "rgb(255, 81, 49)", // Radioactive orange - arcade glow
+  "rgb(191, 85, 255)", // Deep purple - synthwave
+  "rgb(255, 0, 128)", // Electric pink - retro gaming
+  "rgb(0, 174, 255)", // Cerulean blue - old terminals
+  "rgb(255, 145, 0)", // Burning orange - 8-bit era
+  "rgb(124, 255, 0)", // Toxic green - matrix aesthetic
+];
+
 export function MiniPost({ title, tags, desc, date, votes, slug, ...props }) {
-  const [playHover, { stop }] = useSound("/sounds/hover.mp3", {
-    volume: 0.2,
-  });
+  const [playHover, { stop }] = useSound("/sounds/retro.mp3", { volume: 0.2 });
+  const [hoverColor, setHoverColor] = useState("");
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    const randomColor =
+      hoverColors[Math.floor(Math.random() * hoverColors.length)];
+    setHoverColor(randomColor);
+  }, []);
 
   return (
     <Link href={`/stories/${slug}`} passHref legacyBehavior>
@@ -129,67 +149,103 @@ export function MiniPost({ title, tags, desc, date, votes, slug, ...props }) {
           textDecoration: "none",
           color: "text",
           display: "block",
-          ":hover": {
-            color: "text",
-            textDecoration: "none",
-            ".pin-icon": {
-              opacity: 1,
-              color: "yellow",
-            },
-          },
         }}
       >
-        <Column
-          onMouseEnter={() => playHover()}
-          onMouseLeave={() => stop()}
+        <Box
+          onMouseEnter={() => {
+            playHover();
+            setIsHovered(true);
+          }}
+          onMouseLeave={() => {
+            stop();
+            setIsHovered(false);
+          }}
           sx={{
             position: "relative",
-            bg: "secondary",
+            bg: "transparent",
             mx: "8px",
             my: "8px",
-            boxShadow: "3px 3px #272838",
-            transition: "all 0.2s",
-            borderRadius: "8px",
+            borderColor: "secondary",
+            borderRadius: "4px",
             width: "280px",
             height: "180px",
             overflow: "hidden",
             padding: "12px",
+            // Enhanced transition to include transform for smooth movement
+            transition:
+              "all 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            mask: isHovered
+              ? "linear-gradient(-60deg, #E0FBFC 30%, #E0FBFC55, #E0FBFC 70%) right/350% 100%"
+              : "none",
+            animation: isHovered ? "shimmer 2.5s infinite" : "none",
+            transform: isHovered ? "translateY(-8px)" : "translateY(0)", // Adds upward movement on hover
+            "@keyframes shimmer": {
+              "100%": {
+                maskPosition: "left",
+              },
+            },
             ":hover": {
-              cursor: "pointer",
-              transform: "translateY(-2px)",
+              "& .post-text": {
+                color: hoverColor,
+              },
+              "& .post-tags": {
+                color: hoverColor,
+              },
             },
           }}
         >
-          {/* Pin icon with hover effect */}
-          <Box
-            className="pin-icon"
-            sx={{
-              position: "absolute",
-              top: "8px",
-              right: "12px",
-              opacity: 0.5,
-              transition: "all 0.2s ease",
-              color: "text",
-            }}
-          >
-            <Tag size={20} />
-          </Box>
-
-          {/* Main content area */}
           <Box sx={{ mb: "40px" }}>
-            <Heading sx={{ fontSize: 2, mb: 2, pr: 4 }}>{title}</Heading>
+            <Flex
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                mb: 2,
+              }}
+            >
+              <Heading
+                className="post-text"
+                sx={{
+                  fontSize: 2,
+                  pr: 2,
+                  width: "75%",
+                  transition: "color 0.2s ease",
+                }}
+              >
+                {title}
+              </Heading>
+              <Flex
+                sx={{
+                  color: "pink",
+                  alignItems: "center",
+                  minWidth: "fit-content",
+                }}
+              >
+                <Text sx={{ fontSize: 1 }}>{votes ? votes : 0}</Text>
+                <Heart
+                  size={18}
+                  style={{
+                    marginLeft: 8,
+                    fill: "pink",
+                  }}
+                />
+              </Flex>
+            </Flex>
+
             <Text
+              className="post-text"
               sx={{
                 fontSize: 0,
                 color: "muted",
                 fontStyle: "italic",
                 mb: 1,
+                transition: "color 0.2s ease",
               }}
             >
               {date}
             </Text>
             {desc && (
               <Text
+                className="post-text"
                 sx={{
                   fontSize: 0,
                   color: "muted",
@@ -198,13 +254,13 @@ export function MiniPost({ title, tags, desc, date, votes, slug, ...props }) {
                   display: "-webkit-box",
                   WebkitLineClamp: 2,
                   WebkitBoxOrient: "vertical",
+                  transition: "color 0.2s ease",
                 }}
               >
                 {desc}
               </Text>
             )}
 
-            {/* Tags */}
             <Flex
               sx={{
                 flexWrap: "wrap",
@@ -214,12 +270,14 @@ export function MiniPost({ title, tags, desc, date, votes, slug, ...props }) {
               {tags.map((v) => (
                 <Text
                   key={v}
+                  className="post-tags"
                   sx={{
                     color: "highlight",
                     mx: "5px",
                     my: "2px",
                     fontSize: 0,
                     fontWeight: "bold",
+                    transition: "color 0.2s ease",
                   }}
                 >
                   #{v}
@@ -227,30 +285,7 @@ export function MiniPost({ title, tags, desc, date, votes, slug, ...props }) {
               ))}
             </Flex>
           </Box>
-
-          {/* Likes - absolutely positioned */}
-          <Flex
-            sx={{
-              position: "absolute",
-              bottom: "12px",
-              right: "12px",
-              color: "pink",
-              alignItems: "center",
-              textDecoration: "none",
-            }}
-          >
-            <Text sx={{ fontSize: 1, textDecoration: "none" }}>
-              {votes ? votes : 0}
-            </Text>
-            <Heart
-              size={18}
-              style={{
-                marginLeft: 8,
-                fill: "pink",
-              }}
-            />
-          </Flex>
-        </Column>
+        </Box>
       </Box>
     </Link>
   );

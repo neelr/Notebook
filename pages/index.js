@@ -144,17 +144,15 @@ export default function Home({ featured, docs, upvotes, ...props }) {
         >
           {featured.map((v) => {
             return (
-              <Boop rotation="3">
-                <MiniPost
-                  title={v.data.title[0].text}
-                  src={v.data.cover_image.url}
-                  tags={v.tags}
-                  desc={v.data.description[0].text}
-                  date={v.data.date_created}
-                  votes={upvotes[v.id]}
-                  slug={slugify(v.data.title[0].text)}
-                />
-              </Boop>
+              <MiniPost
+                title={v.data.title[0].text}
+                src={v.data.cover_image.url}
+                tags={v.tags}
+                desc={v.data.description[0].text}
+                date={v.data.date_created}
+                votes={upvotes[v.id]}
+                slug={slugify(v.data.title[0].text)}
+              />
             );
           })}
         </Masonry>
