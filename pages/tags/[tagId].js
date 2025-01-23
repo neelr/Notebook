@@ -1,12 +1,11 @@
 import React from "react";
-import { Client } from "../../prismic-configuration";
-import Prismic from "prismic-javascript";
 import { Flex, Heading } from "theme-ui";
 import { Section, Boop } from "@components/semantics";
 import Head from "next/head";
 import { local } from "../api/get";
 import Masonry from "react-masonry-css";
 import Post from "@components/post";
+import { notionClient } from "../../lib/notion";
 
 export default function Tags({ docs, id, upvotes, ...props }) {
   return (
@@ -53,13 +52,13 @@ export default function Tags({ docs, id, upvotes, ...props }) {
           {docs.map((v) => (
             <Boop rotation="3">
               <Post
-                title={v.data.title[0].text}
-                src={v.data.cover_image.url}
+                title={v.title}
+                src={v.coverImage}
                 tags={v.tags}
-                desc={v.data.description[0].text}
-                date={v.data.date_created}
+                desc={v.description}
+                date={v.dateCreated}
                 votes={upvotes[v.id]}
-                slug={v.slugs[0]}
+                slug={v.slug}
               />
             </Boop>
           ))}
@@ -68,26 +67,27 @@ export default function Tags({ docs, id, upvotes, ...props }) {
     </Flex>
   );
 }
-export let getServerSideProps = async (ctx) => {
-  const response = await Client.query(
-    Prismic.Predicates.at("document.tags", [ctx.query.tagId]),
-    {
-      orderings: "[my.stories.date_created desc]",
-      pageSize: 10,
-      page: ctx.query.page ? ctx.query.page : 1,
-    }
+
+export async function getServerSideProps(ctx) {
+  const { docs, total_pages } = await notionClient.getPagesByTag(
+    ctx.params.tagId,
+    ctx.query.page ? parseInt(ctx.query.page) : 1
   );
+
+  // Add your upvotes logic here if needed
   let upvotes = {};
-  for (let i = 0; i < response.results.length; i++) {
-    let votes = await local(response.results[i].id);
-    upvotes[response.results[i].id] = votes;
+  for (let i = 0; i < docs.length; i++) {
+    let votes = await local(docs[i].id);
+    upvotes[docs[i].id] = votes;
   }
+
   return {
     props: {
-      docs: response.results,
-      id: ctx.query.tagId,
-      page: ctx.query.page ? ctx.query.page : 1,
-      upvotes: upvotes,
+      docs,
+      upvotes,
+      total_pages,
+      page: ctx.query.page ? parseInt(ctx.query.page) : 1,
+      id: ctx.params.tagId,
     },
   };
-};
+}

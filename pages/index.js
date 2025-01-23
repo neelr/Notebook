@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { Client } from "../prismic-configuration";
-import Prismic from "prismic-javascript";
 import { Text, Flex, Heading, Image } from "theme-ui";
 import Book from "@components/icons/book";
 import Star from "@components/icons/star";
@@ -11,6 +9,7 @@ import { local } from "./api/get";
 import Clock from "@components/icons/clock";
 import Masonry from "react-masonry-css";
 import Post, { MiniPost } from "@components/post";
+import { notionClient } from "../lib/notion";
 import Link from "next/link";
 
 export default function Home({ featured, docs, upvotes, ...props }) {
@@ -145,13 +144,13 @@ export default function Home({ featured, docs, upvotes, ...props }) {
           {featured.map((v) => {
             return (
               <MiniPost
-                title={v.data.title[0].text}
-                src={v.data.cover_image.url}
+                title={v.title}
+                src={v.coverImage}
                 tags={v.tags}
-                desc={v.data.description[0].text}
-                date={v.data.date_created}
+                desc={v.description}
+                date={v.dateCreated}
                 votes={upvotes[v.id]}
-                slug={slugify(v.data.title[0].text)}
+                slug={slugify(v.slug)}
               />
             );
           })}
@@ -203,13 +202,13 @@ export default function Home({ featured, docs, upvotes, ...props }) {
           {docs.map((v) => (
             <Boop rotation="3">
               <Post
-                title={v.data.title[0].text}
-                src={v.data.cover_image.url}
+                title={v.title}
+                src={v.coverImage}
                 tags={v.tags}
-                desc={v.data.description[0].text}
-                date={v.data.date_created}
+                desc={v.description}
+                date={v.dateCreated}
                 votes={upvotes[v.id]}
-                slug={v.slugs[0]}
+                slug={v.slug}
               />
             </Boop>
           ))}
@@ -219,21 +218,16 @@ export default function Home({ featured, docs, upvotes, ...props }) {
   );
 }
 export async function getStaticProps(ctx) {
-  let response = await Client.query(
-    Prismic.Predicates.at("document.type", "stories"),
-    {
-      orderings: "[my.stories.date_created desc]",
-      pageSize: 1500,
-      page: 1,
-    }
-  );
+  const { featured, docs } = await notionClient.getHomepageData();
+
+  const all = [...featured, ...docs];
+  // Add your upvotes logic here if needed
   let upvotes = {};
-  for (let i = 0; i < response.results.length; i++) {
-    let votes = await local(response.results[i].id);
-    upvotes[response.results[i].id] = votes;
+  for (let i = 0; i < all.length; i++) {
+    let votes = await local(all[i].id);
+    upvotes[all[i].id] = votes;
   }
-  let docs = response.results.filter((v) => !v.tags.includes("featured"));
-  let featured = response.results.filter((v) => v.tags.includes("featured"));
+
   return {
     props: {
       docs,

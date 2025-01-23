@@ -1,6 +1,3 @@
-import { Client } from "../../prismic-configuration";
-import Prismic from "prismic-javascript";
-import marked from "marked";
 import {
   Text,
   Flex,
@@ -15,112 +12,15 @@ import Head from "next/head";
 import { Heart } from "react-feather";
 import fetch from "isomorphic-unfetch";
 import { local } from "../api/get";
-import fs from "fs/promises";
+import { promises as fs } from "fs";
 import { useState } from "react";
 import useSound from "use-sound";
 import { Boop, slugify } from "@components/semantics";
 import theme from "@components/theme";
-import rss from "rss-generator";
 import { useScroll, motion } from "framer-motion";
+import { notionClient } from "../../lib/notion";
+import RSS from "rss";
 
-var htmlSerializer = function (type, element, content, children) {
-  switch (type) {
-    case Elements.paragraph:
-      return <Text sx={{ my: "5px" }}>{children}</Text>;
-    case Elements.hyperlink:
-      return (
-        <A href={element.data.url} target="_blank">
-          {children}
-        </A>
-      );
-    case Elements.heading1:
-      return (
-        <Text
-          sx={{
-            mb: "5px",
-            mt: "20px",
-            textDecoration: "underline",
-            textDecorationStyle: "wavy",
-          }}
-          as="h1"
-        >
-          {children}
-        </Text>
-      );
-    case Elements.heading2:
-      return (
-        <Text
-          sx={{
-            mb: "5px",
-            mt: "20px",
-            textDecoration: "underline",
-            textDecorationStyle: "wavy",
-          }}
-          as="h2"
-        >
-          {children}
-        </Text>
-      );
-    case Elements.heading3:
-      return (
-        <Text
-          sx={{
-            mb: "5px",
-            mt: "20px",
-            textDecoration: "underline",
-            textDecorationStyle: "wavy",
-          }}
-          as="h3"
-        >
-          {children}
-        </Text>
-      );
-    case Elements.heading4:
-      return (
-        <Text
-          sx={{
-            mb: "5px",
-            mt: "20px",
-            textDecoration: "underline",
-            textDecorationStyle: "wavy",
-          }}
-          as="h4"
-        >
-          {children}
-        </Text>
-      );
-    case Elements.heading5:
-      return (
-        <Text
-          sx={{
-            mb: "5px",
-            mt: "20px",
-            textDecoration: "underline",
-            textDecorationStyle: "wavy",
-          }}
-          as="h5"
-        >
-          {children}
-        </Text>
-      );
-    case Elements.heading6:
-      return (
-        <Text
-          sx={{
-            mb: "5px",
-            mt: "20px",
-            textDecoration: "underline",
-            textDecorationStyle: "wavy",
-          }}
-          as="h6"
-        >
-          {children}
-        </Text>
-      );
-    default:
-      return null;
-  }
-};
 const A = ({ sx, ...props }) => (
   <RebassLink
     sx={{
@@ -259,6 +159,9 @@ export default function Story({ id, story, votes, ...props }) {
       </Flex>
     );
   }
+
+  const content = story.content.map((v) => v.content).join("  ");
+
   return (
     <Flex
       sx={{
@@ -290,27 +193,18 @@ export default function Story({ id, story, votes, ...props }) {
         />
       </Flex>
       <Head>
-        <title>{RichText.asText(story.data.title)}</title>
-        <meta property="og:title" content={RichText.asText(story.data.title)} />
+        <title>{story.title}</title>
+        <meta property="og:title" content={story.title} />
 
-        <meta property="og:image" content={story.data.cover_image.url} />
+        <meta property="og:image" content={story.coverImage} />
 
-        <meta
-          property="og:description"
-          content={RichText.asText(story.data.description)}
-        />
+        <meta property="og:description" content={story.description} />
         <meta property="twitter:card" content="summary_large_image" />
-        <meta
-          property="twitter:title"
-          content={RichText.asText(story.data.title)}
-        />
+        <meta property="twitter:title" content={story.title} />
 
-        <meta property="twitter:image" content={story.data.cover_image.url} />
+        <meta property="twitter:image" content={story.coverImage} />
 
-        <meta
-          property="twitter:description"
-          content={RichText.asText(story.data.description)}
-        />
+        <meta property="twitter:description" content={story.description} />
       </Head>
       <Flex
         sx={{
@@ -367,23 +261,15 @@ export default function Story({ id, story, votes, ...props }) {
           </Boop>
         </Flex>
       </Flex>
-      <Heading sx={{ fontSize: [4, 5, 6] }}>
-        {RichText.asText(story.data.title)}
-      </Heading>
+      <Heading sx={{ fontSize: [4, 5, 6] }}>{story.title}</Heading>
       <Text
         sx={{
           color: "muted",
           fontStyle: "italic",
         }}
       >
-        {story.data.date_created} ·{" "}
-        {Math.round(
-          story.data.body1
-            .map((v) => RichText.asText(v.primary[v.slice_type]))
-            .join(" ")
-            .split(" ").length / 200
-        )}{" "}
-        min read
+        {story.dateCreated} · {Math.ceil(content.split(" ").length / 200)} min
+        read
       </Text>
       <Text
         sx={{
@@ -392,64 +278,56 @@ export default function Story({ id, story, votes, ...props }) {
           fontStyle: "italic",
         }}
       >
-        {RichText.asText(story.data.description)}
+        {RichText.asText(story.description)}
       </Text>
-      <Image sx={{ my: "20px" }} src={story.data.cover_image.url} />
-      {story.data.body1.map((slice) =>
-        slice.slice_type == "html" ? (
-          <Flex
-            sx={{
-              flexDirection: "column",
-              blockquote: {
-                fontStyle: "italic",
-                borderLeft: "5px solid red",
-                pl: "15px",
-              },
+      <Image sx={{ my: "20px" }} src={story.coverImage} />
+      <Flex
+        sx={{
+          flexDirection: "column",
+          blockquote: {
+            fontStyle: "italic",
+            borderLeft: "5px solid red",
+            pl: "15px",
+          },
 
-              code: {
-                bg: "muted",
-                color: "background",
-                p: "5px",
-                borderRadius: "3px",
-                my: "50px",
-              },
+          code: {
+            bg: "muted",
+            color: "background",
+            p: "5px",
+            borderRadius: "3px",
+            my: "50px",
+          },
 
-              p: {
-                my: "5px",
-              },
+          p: {
+            my: "5px",
+          },
 
-              a: {
-                color: "primary",
+          a: {
+            color: "primary",
 
-                textDecoration: "underline",
+            textDecoration: "underline",
 
-                textDecorationStyle: "wavy",
+            textDecorationStyle: "wavy",
 
-                ":hover": {
-                  color: "secondary",
+            ":hover": {
+              color: "secondary",
 
-                  cursor: "pointer",
-                },
-              },
+              cursor: "pointer",
+            },
+          },
 
-              "h1,h2,h3,h4,h5,h6": {
-                mb: "5px",
-                mt: "20px",
-                textDecoration: "underline",
-                textDecorationStyle: "wavy",
-              },
-            }}
-            dangerouslySetInnerHTML={{
-              __html: marked(RichText.asText(slice.primary.html)),
-            }}
-          />
-        ) : (
-          <RichText
-            render={slice.primary.text}
-            htmlSerializer={htmlSerializer}
-          />
-        )
-      )}
+          "h1,h2,h3,h4,h5,h6": {
+            mb: "5px",
+            mt: "20px",
+            textDecoration: "underline",
+            textDecorationStyle: "wavy",
+          },
+        }}
+        dangerouslySetInnerHTML={{
+          __html: content,
+        }}
+      />
+
       <Flex sx={{ width: "100%", height: "3px", bg: "muted", my: "10px" }} />
       <Flex>
         <Text sx={{ color: "muted", fontStyle: "italic" }}>
@@ -487,130 +365,159 @@ export default function Story({ id, story, votes, ...props }) {
   );
 }
 
-export let getStaticPaths = async (ctx) => {
-  let response = await Client.query(
-    Prismic.Predicates.at("document.type", "stories"),
-    {
-      orderings: "[my.stories.date_created desc]",
-      pageSize: 1500,
-      page: 1,
-    }
-  );
-  response.results = response.results.map((v) => {
-    v.slugs = [slugify(RichText.asText(v.data.title))];
-    return v;
-  });
+export async function getStaticPaths() {
+  try {
+    // Fetch all stories from Notion
+    const { results } = await notionClient.query({}, { page_size: 1500 });
 
-  let upvotes = {};
-  for (let i = 0; i < response.results.length; i++) {
-    let votes = await local(response.results[i].id);
-    upvotes[response.results[i].id] = votes;
-  }
-  let slugs = {};
-  response.results.forEach((v) => {
-    slugs[v.slugs[0]] = v.id;
-  });
-  await fs.writeFile("./id_cache.json", JSON.stringify(slugs));
-  let rssFeed = new rss({
-    title: "My Notebook",
-    description:
-      "A fun place to jot down my thoughts and ideas! You'll find everything from my favorite music to political thoughts! Have a stroll, and stay a while!",
-    feed_url: "https://notebook.neelr.dev/feed.rss",
-    site_url: "https://notebook.neelr.dev",
-    managingEditor: "Neel Redkar",
-    language: "en",
-    categories: ["Tech", "Notebook", "Politics", "Philosophy"],
-    pubDate: new Date().toUTCString(),
-    ttl: "60",
-  });
-  response.results.forEach((v) => {
-    rssFeed.item({
-      title: RichText.asText(v.data.title),
-      description: RichText.asText(v.data.description),
-      url: `https://notebook.neelr.dev/stories/${v.slugs[0]}`,
-      guid: v.id,
-      date: v.data.date_created,
-      categories: v.tags,
-      custom_elements: [
-        {
-          "media:content": {
-            _attr: {
-              url: v.data.cover_image.url,
-              medium: "image",
+    // Add slugs to results
+    const processedResults = results.map((story) => ({
+      ...story,
+      slug: slugify(story.title.toLowerCase()),
+    }));
+
+    // Create id cache mapping
+    const slugs = {};
+    processedResults.forEach((story) => {
+      slugs[story.slug] = story.id;
+    });
+
+    // Get upvotes for each story
+    const upvotes = {};
+    for (const story of processedResults) {
+      const votes = await local(story.id);
+      upvotes[story.id] = votes;
+    }
+
+    // Save id cache
+    await fs.writeFile("./id_cache.json", JSON.stringify(slugs));
+
+    // Create RSS feed
+    const rssFeed = new RSS({
+      title: "My Notebook",
+      description:
+        "A fun place to jot down my thoughts and ideas! You'll find everything from my favorite music to political thoughts! Have a stroll, and stay a while!",
+      feed_url: "https://notebook.neelr.dev/feed.rss",
+      site_url: "https://notebook.neelr.dev",
+      managingEditor: "Neel Redkar",
+      language: "en",
+      categories: ["Tech", "Notebook", "Politics", "Philosophy"],
+      pubDate: new Date().toUTCString(),
+      ttl: "60",
+    });
+
+    // Add items to RSS feed
+    processedResults.forEach((story) => {
+      rssFeed.item({
+        title: story.title,
+        description: story.description,
+        url: `https://notebook.neelr.dev/stories/${story.slug}`,
+        guid: story.id,
+        date: story.dateCreated,
+        categories: story.tags,
+        custom_elements: [
+          {
+            "media:content": {
+              _attr: {
+                url: story.coverImage,
+                medium: "image",
+              },
             },
           },
-        },
-        {
-          "stars:count": upvotes[v.id],
-        },
-      ],
+          {
+            "stars:count": upvotes[story.id],
+          },
+        ],
+      });
     });
-  });
-  await fs.writeFile("./public/feed.rss", rssFeed.xml());
-  await fs.writeFile(
-    "./public/feed_first5.json",
-    JSON.stringify(
-      response.results.slice(0, 5).map((v) => {
-        return {
-          title: RichText.asText(v.data.title),
-          description: RichText.asText(v.data.description),
-          url: `https://notebook.neelr.dev/stories/${v.slugs[0]}`,
-          guid: v.id,
-          date: v.data.date_created,
-          categories: v.tags,
-          image: v.data.cover_image.url,
-          upvotes: upvotes[v.id],
-        };
-      })
-    )
-  );
 
-  return {
-    paths: response.results.map((v) => {
-      return { params: { slug: v.slugs[0] } };
-    }),
-    fallback: true,
-  };
-};
-export let getStaticProps = async ({ params }) => {
-  let id;
+    // Save RSS feed
+    await fs.writeFile("./public/feed.rss", rssFeed.xml());
+
+    // Save first 5 stories to JSON
+    await fs.writeFile(
+      "./public/feed_first5.json",
+      JSON.stringify(
+        processedResults.slice(0, 5).map((story) => ({
+          title: story.title,
+          description: story.description,
+          url: `https://notebook.neelr.dev/stories/${story.slug}`,
+          guid: story.id,
+          date: story.dateCreated,
+          categories: story.tags,
+          image: story.coverImage,
+          upvotes: upvotes[story.id],
+        }))
+      )
+    );
+
+    return {
+      paths: processedResults.map((story) => ({
+        params: { slug: story.slug },
+      })),
+      fallback: true,
+    };
+  } catch (error) {
+    console.error("Error in getStaticPaths:", error);
+    return {
+      paths: [],
+      fallback: true,
+    };
+  }
+}
+
+export async function getStaticProps({ params }) {
   try {
-    let ids = JSON.parse(await fs.readFile("./id_cache.json"));
-    if (Object.keys(ids).includes(params.slug)) {
-      id = ids[params.slug];
-    } else {
-      let response = await Client.query(
-        Prismic.Predicates.at("document.type", "stories"),
-        {
-          orderings: "[my.stories.date_created desc]",
-          pageSize: 1500,
-          page: 1,
-        }
-      );
-      let slugs = {};
-      response.results.forEach((v) => {
-        slugs[v.slugs[0]] = v.id;
+    let id;
+
+    // Try to get ID from cache first
+    try {
+      const ids = JSON.parse(await fs.readFile("./id_cache.json"));
+      if (Object.keys(ids).includes(params.slug)) {
+        id = ids[params.slug];
+      } else {
+        // If not in cache, rebuild the cache
+        const { results } = await notionClient.query({}, { page_size: 1500 });
+        const slugs = {};
+        results.forEach((story) => {
+          slugs[slugify(story.title.toLowerCase())] = story.id;
+        });
+        id = slugs[params.slug];
+      }
+    } catch {
+      // If cache read fails, fetch all and rebuild cache
+      const { results } = await notionClient.query({}, { page_size: 1500 });
+      const slugs = {};
+      results.forEach((story) => {
+        slugs[slugify(story.title.toLowerCase())] = story.id;
       });
       id = slugs[params.slug];
     }
-  } catch {
-    let response = await Client.query(
-      Prismic.Predicates.at("document.type", "stories"),
-      {
-        orderings: "[my.stories.date_created desc]",
-        pageSize: 1500,
-        page: 1,
-      }
-    );
-    let slugs = {};
-    response.results.forEach((v) => {
-      slugs[v.slugs[0]] = v.id;
-    });
-    id = slugs[params.slug];
+
+    if (!id) {
+      return { notFound: true };
+    }
+
+    // Fetch the specific story by ID
+    const story = await notionClient.client.pages.retrieve({ page_id: id });
+    const stars = await local(id);
+
+    // Transform and parse the story data
+    const transformedStory = await notionClient.transformPageData(story);
+    const parsedStory = await notionClient.parse(transformedStory);
+
+    return {
+      props: {
+        story: parsedStory,
+        votes: stars,
+        id,
+      },
+      revalidate: 30,
+    };
+  } catch (error) {
+    console.error("Error in getStaticProps:", error);
+    return {
+      notFound: true,
+    };
   }
-
-  const response = await Client.getByID(id);
-  let stars = await local(id);
-
-  return { props: { story: response, votes: stars, id }, revalidate: 30 };
-};
+}
