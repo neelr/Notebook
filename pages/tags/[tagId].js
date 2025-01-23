@@ -5,7 +5,7 @@ import Head from "next/head";
 import { local } from "../api/get";
 import Masonry from "react-masonry-css";
 import Post from "@components/post";
-import { notionClient } from "../../lib/notion";
+import { notionClient } from "@lib/notion";
 
 export default function Tags({ docs, id, upvotes, ...props }) {
   return (

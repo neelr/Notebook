@@ -9,7 +9,7 @@ import { local } from "./api/get";
 import Clock from "@components/icons/clock";
 import Masonry from "react-masonry-css";
 import Post, { MiniPost } from "@components/post";
-import { notionClient } from "../lib/notion";
+import { notionClient } from "@lib/notion";
 import Link from "next/link";
 
 export default function Home({ featured, docs, upvotes, ...props }) {

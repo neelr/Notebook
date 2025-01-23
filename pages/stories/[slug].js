@@ -7,7 +7,6 @@ import {
   useColorMode,
 } from "theme-ui";
 import Link from "next/link";
-import { RichText, Elements } from "prismic-reactjs";
 import Head from "next/head";
 import { Heart } from "react-feather";
 import fetch from "isomorphic-unfetch";
@@ -18,7 +17,7 @@ import useSound from "use-sound";
 import { Boop, slugify } from "@components/semantics";
 import theme from "@components/theme";
 import { useScroll, motion } from "framer-motion";
-import { notionClient } from "../../lib/notion";
+import { notionClient } from "@lib/notion";
 import RSS from "rss";
 
 const A = ({ sx, ...props }) => (
@@ -278,7 +277,7 @@ export default function Story({ id, story, votes, ...props }) {
           fontStyle: "italic",
         }}
       >
-        {RichText.asText(story.description)}
+        {story.description}
       </Text>
       <Image sx={{ my: "20px" }} src={story.coverImage} />
       <Flex
