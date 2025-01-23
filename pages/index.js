@@ -10,7 +10,7 @@ import Head from "next/head";
 import { local } from "./api/get";
 import Clock from "@components/icons/clock";
 import Masonry from "react-masonry-css";
-import Post from "@components/post";
+import Post, { MiniPost } from "@components/post";
 import Link from "next/link";
 
 export default function Home({ featured, docs, upvotes, ...props }) {
@@ -45,7 +45,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
           property="twitter:description"
           content="A nice way to jot down thoughts, ideas, or articles I have!"
         />
-        <script src='https://analytics.stacc.cc/api/script/v925J2qMyDZV'></script>
+        <script src="https://analytics.stacc.cc/api/script/v925J2qMyDZV"></script>
       </Head>
       <Section>
         <Column
@@ -133,9 +133,10 @@ export default function Home({ featured, docs, upvotes, ...props }) {
         </Heading>
         <Masonry
           breakpointCols={{
-            10000: 3,
-            1024: 2,
-            640: 1,
+            10000: 4, // Show 4 columns on very large screens
+            1400: 3, // 3 columns on regular desktop
+            1024: 2, // 2 columns on smaller desktop/tablet
+            640: 1, // 1 column on mobile
             default: 1,
           }}
           className="masonry-posts"
@@ -144,7 +145,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
           {featured.map((v) => {
             return (
               <Boop rotation="3">
-                <Post
+                <MiniPost
                   title={v.data.title[0].text}
                   src={v.data.cover_image.url}
                   tags={v.tags}
