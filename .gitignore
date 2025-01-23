@@ -6,5 +6,6 @@ components/auth.json
 id_cache.json
 .vercel
 public/feed.rss
+public/feed_first5.json
 .env.local
 .env
