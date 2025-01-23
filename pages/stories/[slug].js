@@ -506,7 +506,7 @@ export async function getStaticProps({ params }) {
         votes: stars,
         id,
       },
-      revalidate: 30,
+      revalidate: 10,
     };
   } catch (error) {
     console.error("Error in getStaticProps:", error);
