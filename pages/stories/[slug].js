@@ -160,6 +160,24 @@ export default function Story({ id, story, votes, ...props }) {
 
   const content = story.content.map((v) => v.content).join("  ");
 
+  // Add this utility function at the top of your file
+  const getReadingTime = (htmlContent) => {
+    // Remove HTML tags
+    const strippedContent = htmlContent.replace(/<[^>]*>/g, " ");
+
+    // Remove extra whitespace and split into words
+    const words = strippedContent
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0);
+
+    // Calculate reading time (200 words per minute)
+    return Math.ceil(words.length / 200);
+  };
+
+  // In your Story component, replace the reading time calculation with:
+  const readingTime = getReadingTime(content);
+
   return (
     <Flex
       sx={{
@@ -266,8 +284,7 @@ export default function Story({ id, story, votes, ...props }) {
           fontStyle: "italic",
         }}
       >
-        {story.dateCreated} · {Math.ceil(content.split(" ").length / 200)} min
-        read
+        {story.dateCreated} · {readingTime} min read
       </Text>
       <Text
         sx={{
