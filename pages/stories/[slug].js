@@ -489,7 +489,7 @@ export async function getStaticProps({ params }) {
     }
 
     if (!id) {
-      return { notFound: true };
+      return { notFound: true, revalidate: 10 };
     }
 
     // Fetch the specific story by ID
@@ -512,6 +512,7 @@ export async function getStaticProps({ params }) {
     console.error("Error in getStaticProps:", error);
     return {
       notFound: true,
+      revalidate: 10,
     };
   }
 }
