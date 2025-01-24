@@ -10,15 +10,15 @@ import Link from "next/link";
 import Head from "next/head";
 import { Heart } from "react-feather";
 import fetch from "isomorphic-unfetch";
-import { local } from "../api/get";
+import { local } from "../api/get.js";
 import { promises as fs } from "fs";
 import { useState } from "react";
 import useSound from "use-sound";
-import { Boop, slugify } from "@components/semantics";
+import { Boop } from "@components/semantics";
 import theme from "@components/theme";
 import { useScroll, motion } from "framer-motion";
 import { notionClient } from "@lib/notion";
-import RSS from "rss";
+import handleCacheAndRSS from "@lib/handleCache";
 
 const A = ({ sx, ...props }) => (
   <RebassLink
@@ -369,84 +369,12 @@ export async function getStaticPaths() {
     // Fetch all stories from Notion
     const { results } = await notionClient.query({}, { page_size: 1500 });
 
-    const processedResults = results;
-    // Create id cache mapping
-    const slugs = {};
-    processedResults.forEach((story) => {
-      slugs[story.slug] = story.id;
-    });
+    // Handle cache and RSS feed generation
+    await handleCacheAndRSS(results);
 
-    // Get upvotes for each story
-    const upvotes = {};
-    for (const story of processedResults) {
-      const votes = await local(story.id);
-      upvotes[story.id] = votes;
-    }
-
-    // Save id cache
-    await fs.writeFile("./id_cache.json", JSON.stringify(slugs));
-
-    // Create RSS feed
-    const rssFeed = new RSS({
-      title: "My Notebook",
-      description:
-        "A fun place to jot down my thoughts and ideas! You'll find everything from my favorite music to political thoughts! Have a stroll, and stay a while!",
-      feed_url: "https://notebook.neelr.dev/feed.rss",
-      site_url: "https://notebook.neelr.dev",
-      managingEditor: "Neel Redkar",
-      language: "en",
-      categories: ["Tech", "Notebook", "Politics", "Philosophy"],
-      pubDate: new Date().toUTCString(),
-      ttl: "60",
-    });
-
-    // Add items to RSS feed
-    processedResults.forEach((story) => {
-      rssFeed.item({
-        title: story.title,
-        description: story.description,
-        url: `https://notebook.neelr.dev/stories/${story.slug}`,
-        guid: story.id,
-        date: story.dateCreated,
-        categories: story.tags,
-        custom_elements: [
-          {
-            "media:content": {
-              _attr: {
-                url: story.coverImage,
-                medium: "image",
-              },
-            },
-          },
-          {
-            "stars:count": upvotes[story.id],
-          },
-        ],
-      });
-    });
-
-    // Save RSS feed
-    await fs.writeFile("./public/feed.rss", rssFeed.xml());
-
-    // Save first 5 stories to JSON
-    await fs.writeFile(
-      "./public/feed_first5.json",
-      JSON.stringify(
-        processedResults.slice(0, 5).map((story) => ({
-          title: story.title,
-          description: story.description,
-          url: `https://notebook.neelr.dev/stories/${story.slug}`,
-          guid: story.id,
-          date: story.dateCreated,
-          categories: story.tags,
-          image: story.coverImage,
-          upvotes: upvotes[story.id],
-        }))
-      )
-    );
-
+    // Return paths for Next.js
     return {
-      paths: processedResults.map((story) => ({
+      paths: results.map((story) => ({
         params: { slug: story.slug },
       })),
       fallback: true,
@@ -472,19 +400,13 @@ export async function getStaticProps({ params }) {
       } else {
         // If not in cache, rebuild the cache
         const { results } = await notionClient.query({}, { page_size: 1500 });
-        const slugs = {};
-        results.forEach((story) => {
-          slugs[slugify(story.title.toLowerCase())] = story.id;
-        });
+        const { slugs } = await handleCacheAndRSS(results);
         id = slugs[params.slug];
       }
     } catch {
       // If cache read fails, fetch all and rebuild cache
       const { results } = await notionClient.query({}, { page_size: 1500 });
-      const slugs = {};
-      results.forEach((story) => {
-        slugs[slugify(story.title.toLowerCase())] = story.id;
-      });
+      const { slugs } = await handleCacheAndRSS(results);
       id = slugs[params.slug];
     }
 
