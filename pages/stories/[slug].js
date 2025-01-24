@@ -11,7 +11,6 @@ import Head from "next/head";
 import { Heart } from "react-feather";
 import fetch from "isomorphic-unfetch";
 import { local } from "../api/get.js";
-import { promises as fs } from "fs";
 import { useState } from "react";
 import useSound from "use-sound";
 import { Boop } from "@components/semantics";
@@ -364,12 +363,13 @@ export default function Story({ id, story, votes, ...props }) {
   );
 }
 
+// Replace the getStaticPaths and getStaticProps in paste.txt with:
 export async function getStaticPaths() {
   try {
     // Fetch all stories from Notion
     const { results } = await notionClient.query({}, { page_size: 1500 });
 
-    // Handle cache and RSS feed generation
+    // Generate RSS feed if needed
     await handleCacheAndRSS(results);
 
     // Return paths for Next.js
@@ -390,43 +390,30 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   try {
-    let id;
+    // Fetch the page directly using the slug
+    const pageData = await notionClient.getPageBySlug(params.slug);
 
-    // Try to get ID from cache first
-    try {
-      const ids = JSON.parse(await fs.readFile("./id_cache.json"));
-      if (Object.keys(ids).includes(params.slug)) {
-        id = ids[params.slug];
-      } else {
-        // If not in cache, rebuild the cache
-        const { results } = await notionClient.query({}, { page_size: 1500 });
-        const { slugs } = await handleCacheAndRSS(results);
-        id = slugs[params.slug];
-      }
-    } catch {
-      // If cache read fails, fetch all and rebuild cache
-      const { results } = await notionClient.query({}, { page_size: 1500 });
-      const { slugs } = await handleCacheAndRSS(results);
-      id = slugs[params.slug];
+    if (!pageData) {
+      return {
+        notFound: true,
+        revalidate: 10,
+      };
     }
 
-    if (!id) {
-      return { notFound: true, revalidate: 10 };
-    }
-
-    // Fetch the specific story by ID
-    const story = await notionClient.client.pages.retrieve({ page_id: id });
-    const stars = await local(id);
+    // Get stars/votes count
+    const stars = await local(pageData.id);
 
     // Transform and parse the story data
-    const transformedStory = await notionClient.transformPageData(story);
+    const transformedStory = await notionClient.transformPageData(
+      pageData.page
+    );
     const parsedStory = await notionClient.parse(transformedStory);
 
     return {
       props: {
         story: parsedStory,
         votes: stars,
-        id,
+        id: pageData.id,
       },
       revalidate: 10,
     };
