@@ -24,8 +24,8 @@ export default function Home({ featured, docs, upvotes, ...props }) {
   return (
     <Flex sx={{ flexDirection: "column" }}>
       <Head>
-        <title>Notebook v3.0</title>
-        <meta property="og:title" content="Notebook v3.0" />
+        <title>Notebook v3.5</title>
+        <meta property="og:title" content="Notebook v3.5" />
         <meta
           property="og:image"
           content="http://notebook.neelr.dev/openg.png"
@@ -35,7 +35,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
           content="A nice way to jot down thoughts, ideas, or articles I have!"
         />
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:title" content="Notebook v3.0" />
+        <meta property="twitter:title" content="Notebook v3.5" />
         <meta
           property="twiter:image"
           content="http://notebook.neelr.dev/openg.png"

@@ -12,7 +12,7 @@ export default function Tags({ docs, id, upvotes, ...props }) {
     <Flex sx={{ flexDirection: "column" }}>
       <Head>
         <title>#{id}</title>
-        <meta property="og:title" content={`Notebook v3.0 #${id}`} />
+        <meta property="og:title" content={`Notebook v3.5 #${id}`} />
         <meta
           property="og:image"
           content="http://notebook.neelr.dev/openg.png"
