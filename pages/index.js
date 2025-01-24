@@ -89,7 +89,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
             setTilt(-1);
           }}
         >
-          Notebook 3.0
+          Notebook 3.5
         </Heading>
         <Text
           mx="auto"
