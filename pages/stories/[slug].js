@@ -387,7 +387,7 @@ export async function getStaticPaths() {
     const { results } = await notionClient.query({}, { page_size: 1500 });
 
     // Generate RSS feed if needed
-    await handleCacheAndRSS(results);
+    await handleCacheAndRSS(results, { writeFiles: true });
 
     // Return paths for Next.js
     return {
