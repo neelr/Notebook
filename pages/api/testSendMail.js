@@ -1,4 +1,5 @@
-const sgMail = require('@sendgrid/mail');
+import sgMail from '@sendgrid/mail';
+import { parseRichTextForEmail, generatePreviewHtml, generateNewsletterEmail } from '../../lib/emailHelpers.js';
 
 export default async function handler(req, res) {
   // Only accept POST requests
@@ -32,37 +33,58 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Extract page data from webhook (same format as sendMail.js)
+    const pageData = req.body.data;
+    const pageId = pageData.id;
+    const title = pageData.properties.Name.title[0]?.text.content;
+    const slug = pageData.properties.slug.formula?.string;
+    const description = pageData.properties.description.rich_text[0]?.text.content;
+    const coverImage = pageData.properties.coverImage.url || null;
+    const tags = pageData.properties.tags.multi_select.map(tag => tag.name);
+    const dateCreated = pageData.properties.dateCreated.date?.start;
+    const postUrl = pageData.properties.url.formula?.string;
+    const emailPreBodyRichText = pageData.properties['email prebody']?.rich_text || [];
+    const emailPreBody = parseRichTextForEmail(emailPreBodyRichText);
+
+    // Import NotionClient and fetch content
+    const { NotionClient } = await import('../../lib/notion.js');
+    const notionClient = new NotionClient(
+      process.env.NOTION_API_KEY,
+      process.env.NOTION_DATABASE_ID
+    );
+
+    // Fetch blocks and generate preview
+    const blocksData = await notionClient.getAllBlocks(pageId);
+    const previewHtml = generatePreviewHtml(blocksData.blocks);
+
+    // Generate email HTML using shared helper
+    const emailHtml = generateNewsletterEmail({
+      title,
+      description,
+      coverImage,
+      tags,
+      dateCreated,
+      postUrl,
+      previewHtml,
+      emailPreBody
+    });
+
+    // Send test email via SendGrid (to single recipient, not marketing list)
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
     const msg = {
       to: 'neel.redkar@gmail.com',
-      from: process.env.SENDGRID_FROM_EMAIL || 'neel@neelr.dev',
-      subject: 'Test Email from Notebook',
-      html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Test Email</title>
-</head>
-<body>
-  <h1 style="color: #EE6C4D;">Test Email</h1>
-  <p style="color: #293241; font-family: Arial, Helvetica, sans-serif;">
-    This is a test email from the notebook newsletter system.
-  </p>
-  <p style="color: #293241; font-family: Arial, Helvetica, sans-serif;">
-    Sent at: ${new Date().toISOString()}
-  </p>
-</body>
-</html>
-      `.trim()
+      from: process.env.SENDGRID_FROM_EMAIL || 'hi@neelr.dev',
+      subject: `[TEST] neel update: ${title}`,
+      html: emailHtml
     };
 
     await sgMail.send(msg);
 
     return res.status(200).json({
       success: true,
-      message: 'Test email sent to neel.redkar@gmail.com'
+      message: 'Test email sent to neel.redkar@gmail.com',
+      title: title
     });
 
   } catch (error) {
