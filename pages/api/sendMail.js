@@ -137,7 +137,7 @@ function generateNewsletterEmail(pageData) {
   <hr>
   <p><strong>${title}</strong></p>
   <p>${description || ""}${tagsHtml ? `, ${tagsHtml}` : ""}</p>
-  ${coverImage ? `<p><img src="${coverImage}" alt="${title}" style="width: 300px;"></p>` : ""}
+  ${coverImage ? `<p><a clicktracking=off href="${postUrl}"><img src="${coverImage}" alt="${title}" style="width: 300px;"></a></p>` : ""}
   ${previewHtml || ""}
   <p><a clicktracking=off href="${postUrl}" style="color: #EE6C4D;">...read the full post! =&gt;</a></p>
   <hr>
