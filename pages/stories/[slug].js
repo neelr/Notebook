@@ -314,7 +314,7 @@ export default function Story({ id, story, votes, ...props }) {
           },
 
           p: {
-            my: "5px",
+            my: "15px",
           },
 
           a: {
