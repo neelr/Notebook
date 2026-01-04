@@ -6,7 +6,7 @@
     "start": "next"
   },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,10 @@
   "homepage": "https://github.com/neelr/notebook#readme",
   "dependencies": {
     "@notionhq/client": "^2.2.15",
+    "@sendgrid/client": "^8.1.6",
+    "@sendgrid/mail": "^8.1.6",
     "@vercel/analytics": "^0.1.6",
+    "dotenv": "^17.2.3",
     "firebase-admin": "^9.6.0",
     "framer-motion": "^10.17.9",
     "isomorphic-unfetch": "^3.1.0",

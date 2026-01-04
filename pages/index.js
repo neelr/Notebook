@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, Flex, Heading, Image } from "theme-ui";
+import { Text, Flex, Heading, Image, Link as A } from "theme-ui";
 import Book from "@components/icons/book";
 import Star from "@components/icons/star";
 import useSound from "use-sound";
@@ -10,7 +10,6 @@ import Clock from "@components/icons/clock";
 import Masonry from "react-masonry-css";
 import Post, { MiniPost } from "@components/post";
 import { notionClient } from "@lib/notion";
-import Link from "next/link";
 
 export default function Home({ featured, docs, upvotes, ...props }) {
   let [tilt, setTilt] = useState(-1);
@@ -99,7 +98,7 @@ export default function Home({ featured, docs, upvotes, ...props }) {
         >
           A fun place to jot down my thoughts and ideas! You'll find everything
           from my favorite music to political thoughts! Have a stroll, and stay
-          a while!
+          a while! <A href="/subscribe">Join my newsletter</A> to get a livestream of my thoughts + updates!
         </Text>
       </Section>
       <Section
