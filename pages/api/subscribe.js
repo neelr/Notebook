@@ -85,6 +85,7 @@ export default async function handler(req, res) {
           <br>
           <p>-neel</p>
           <br><img src="https://neelr.dev/hippo.png" alt="neel" width="50" height="50" />
+          <i>to <a clicktracking=off href="https://neelr.dev">unsubscribe</a>, just reply to this email and i'll remove you from the list.</i>
           `.trim()
         };
 
