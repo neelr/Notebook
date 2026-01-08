@@ -44,8 +44,8 @@ export default {
     },
   },
   fonts: {
-    body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
-    heading: "inherit",
+    body: 'Georgia, "Times New Roman", Times, serif',
+    heading: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
     monospace: "Menlo, monospace",
   },
   fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 72],
