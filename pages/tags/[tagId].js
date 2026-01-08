@@ -5,6 +5,7 @@ import Head from "next/head";
 import { local } from "../api/get";
 import Masonry from "react-masonry-css";
 import Post from "@components/post";
+import Tag from "@components/Tag";
 import { notionClient } from "@lib/notion";
 
 export default function Tags({ docs, id, upvotes, ...props }) {
@@ -32,12 +33,11 @@ export default function Tags({ docs, id, upvotes, ...props }) {
           sx={{
             fontSize: [3, 4, 5],
             mr: "auto",
-            borderBottom: "5px solid highlight",
             ml: "20px",
             mb: "10px",
           }}
         >
-          <Flex>#{id}</Flex>
+          <Tag tag={id} asTitle tilted />
         </Heading>
         <Masonry
           breakpointCols={{

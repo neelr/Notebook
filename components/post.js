@@ -3,7 +3,8 @@ import { Column } from "./semantics";
 import { Text, Flex, Heading, Image, Link as A, Box } from "theme-ui";
 import useSound from "use-sound";
 import Link from "next/link";
-import { Heart, Tag } from "react-feather";
+import { Heart } from "react-feather";
+import Tag from "./Tag";
 
 export default function Post({
   title,
@@ -18,7 +19,7 @@ export default function Post({
   const [playHover, { stop }] = useSound("/sounds/hover.mp3", {
     volume: 0.2,
   });
-  return (
+    return (
     <A
       sx={{
         textDecoration: "none",
@@ -77,37 +78,27 @@ export default function Post({
             }}
           >
             {tags.map((v) => (
-              <Link href={`/tags/${v}`} legacyBehavior>
-                <Text
-                  sx={{
-                    color: "highlight",
-                    mx: "5px",
-                    my: "2px",
-                    fontWeight: "bold",
-                    ":hover": {
-                      color: "muted",
-                      cursor: "pointer",
-                    },
-                  }}
-                >
-                  #{v}
-                </Text>
-              </Link>
+              <Tag key={v} tag={v} />
             ))}
           </Flex>
           <Flex
             sx={{
               mt: "5px",
               ml: "auto",
-              color: "pink",
+              bg: "pink",
+              color: "background",
+              borderRadius: "4px",
+              px: "10px",
+              py: "4px",
+              alignItems: "center",
             }}
           >
-            {votes ? votes : 0}
+            <Text sx={{ fontFamily: "heading", fontWeight: "bold" }}>{votes ? votes : 0}</Text>
             <Heart
-              size={24}
+              size={18}
               style={{
-                marginLeft: 10,
-                fill: "pink",
+                marginLeft: 8,
+                fill: "currentColor",
               }}
             />
           </Flex>
@@ -207,7 +198,6 @@ export function MiniPost({ title, tags, desc, date, votes, slug, ...props }) {
                 sx={{
                   fontSize: 2,
                   pr: 2,
-                  width: "75%",
                   transition: "color 0.2s ease",
                 }}
               >
@@ -215,17 +205,21 @@ export function MiniPost({ title, tags, desc, date, votes, slug, ...props }) {
               </Heading>
               <Flex
                 sx={{
-                  color: "pink",
+                  bg: "pink",
+                  color: "background",
+                  borderRadius: "4px",
+                  px: "8px",
+                  py: "2px",
                   alignItems: "center",
                   minWidth: "fit-content",
                 }}
               >
-                <Text sx={{ fontSize: 1 }}>{votes ? votes : 0}</Text>
+                <Text sx={{ fontSize: 1, fontFamily: "heading", fontWeight: "bold" }}>{votes ? votes : 0}</Text>
                 <Heart
-                  size={18}
+                  size={14}
                   style={{
-                    marginLeft: 8,
-                    fill: "pink",
+                    marginLeft: 6,
+                    fill: "currentColor",
                   }}
                 />
               </Flex>
@@ -268,20 +262,7 @@ export function MiniPost({ title, tags, desc, date, votes, slug, ...props }) {
               }}
             >
               {tags.map((v) => (
-                <Text
-                  key={v}
-                  className="post-tags"
-                  sx={{
-                    color: "highlight",
-                    mx: "5px",
-                    my: "2px",
-                    fontSize: 0,
-                    fontWeight: "bold",
-                    transition: "color 0.2s ease",
-                  }}
-                >
-                  #{v}
-                </Text>
+                <Tag key={v} tag={v} size="small" />
               ))}
             </Flex>
           </Box>

@@ -3,6 +3,7 @@ import {
   Flex,
   Heading,
   Image,
+  Box,
   Link as RebassLink,
   useColorMode,
 } from "theme-ui";
@@ -14,6 +15,7 @@ import { local } from "../api/get.js";
 import { useState } from "react";
 import useSound from "use-sound";
 import { Boop } from "@components/semantics";
+import Tag from "@components/Tag";
 import theme from "@components/theme";
 import { useScroll, motion } from "framer-motion";
 import { notionClient } from "@lib/notion";
@@ -225,57 +227,50 @@ export default function Story({ id, story, votes, ...props }) {
       <Flex
         sx={{
           flexWrap: "wrap",
+          alignItems: "center",
         }}
       >
         {story.tags.map((v) => (
-          <Link href={`/tags/${v}`} legacyBehavior>
-            <Text
-              sx={{
-                color: "highlight",
-                mx: "5px",
-                my: "2px",
-                fontStyle: "italic",
-                fontWeight: "bold",
-                ":hover": {
-                  color: "muted",
-                  cursor: "pointer",
-                },
-              }}
-            >
-              #{v}
-            </Text>
-          </Link>
+          <Tag key={v} tag={v} sx={{ my: 0 }} />
         ))}
-        <Flex
-          sx={{
-            mt: "5px",
-            ml: "auto",
-            color: "pink",
-            ":hover": {
-              cursor: "pointer",
-            },
-          }}
-          onMouseEnter={() => (count ? null : playHover())}
-          onMouseLeave={stop}
-          onClick={() => {
-            if (!count) {
-              playBell({ id: "main" });
-            }
-            upvote();
-            setCount(true);
-          }}
-        >
-          {votes ? votes + count : 0 + count}
-          <Flex ml="10px" />
+        <Box sx={{ ml: "auto" }}>
           <Boop rotation="10">
+            <Flex
+              sx={{
+                bg: count ? "pink" : "muted",
+                color: "background",
+                borderRadius: "4px",
+                px: "10px",
+                py: "4px",
+                alignItems: "center",
+                transition: "all 0.2s ease",
+              ":hover": {
+                opacity: 0.8,
+                cursor: "pointer",
+              },
+            }}
+            onMouseEnter={() => (count ? null : playHover())}
+            onMouseLeave={stop}
+            onClick={() => {
+              if (!count) {
+                playBell({ id: "main" });
+              }
+              upvote();
+              setCount(true);
+            }}
+          >
+            <Text sx={{ fontFamily: "heading", fontWeight: "bold" }}>{votes ? votes + count : 0 + count}</Text>
             <Heart
-              size={24}
+              size={18}
               style={{
-                fill: count ? "pink" : "transparent",
+                marginLeft: 8,
+                fill: colorMode == "default" ? theme.colors.background : theme.colors.modes.dark.background,
+                display: "block",
               }}
             />
+            </Flex>
           </Boop>
-        </Flex>
+        </Box>
       </Flex>
       <Heading sx={{ fontSize: [4, 5, 6] }}>{story.title}</Heading>
       <Text
@@ -344,37 +339,45 @@ export default function Story({ id, story, votes, ...props }) {
       />
 
       <Flex sx={{ width: "100%", height: "3px", bg: "muted", my: "10px" }} />
-      <Flex>
+      <Flex sx={{ alignItems: "center" }}>
         <Text sx={{ color: "muted", fontStyle: "italic" }}>
           Thanks for reading! Liked the story? Click the heart
         </Text>
-        <Flex
-          sx={{
-            color: "pink",
-            ":hover": {
-              cursor: "pointer",
-            },
-          }}
-          onMouseEnter={() => (count ? null : playHover())}
-          onMouseLeave={stop}
-          onClick={() => {
-            if (!count) {
-              playBell({ id: "main" });
-            }
-            upvote();
-            setCount(true);
-          }}
-        >
-          <Flex ml="10px" />
-          <Boop rotation="10">
+        <Boop rotation="10">
+          <Flex
+            sx={{
+              bg: count ? "pink" : "muted",
+              color: "background",
+              borderRadius: "4px",
+              p: "8px",
+              alignItems: "center",
+              justifyContent: "center",
+              ml: "10px",
+              transition: "all 0.2s ease",
+              ":hover": {
+                opacity: 0.8,
+                cursor: "pointer",
+              },
+            }}
+            onMouseEnter={() => (count ? null : playHover())}
+            onMouseLeave={stop}
+            onClick={() => {
+              if (!count) {
+                playBell({ id: "main" });
+              }
+              upvote();
+              setCount(true);
+            }}
+          >
             <Heart
-              size={24}
+              size={18}
               style={{
-                fill: count ? "pink" : "transparent",
+                fill: colorMode == "default" ? theme.colors.background : theme.colors.modes.dark.background,
+                display: "block",
               }}
             />
-          </Boop>
-        </Flex>
+          </Flex>
+        </Boop>
       </Flex>
     </Flex>
   );
