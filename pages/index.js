@@ -233,6 +233,6 @@ export async function getStaticProps(ctx) {
       featured,
       upvotes,
     },
-    revalidate: 10,
+    revalidate: 1800,
   };
 }

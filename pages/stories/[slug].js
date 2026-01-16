@@ -416,7 +416,7 @@ export async function getStaticProps({ params }) {
     if (!pageData) {
       return {
         notFound: true,
-        revalidate: 10,
+        revalidate: 300,
       };
     }
 
