@@ -223,7 +223,7 @@ function ProgressRope({ scrollYProgress, color }) {
           const targetX = t * endX;
           const distFromLine = Math.abs(pts[i].y - 3);
           // Strong correction when close to line (prevents droop), gentle when far (slow snap-back)
-          const strength = distFromLine > 5 ? 0.003 : 0.04;
+          const strength = distFromLine > 5 ? 0.003 : 0.065;
           pts[i].x += (targetX - pts[i].x) * strength;
           pts[i].y += (3 - pts[i].y) * strength;
         }
