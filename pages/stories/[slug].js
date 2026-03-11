@@ -295,7 +295,7 @@ function ProgressRope({ scrollYProgress, color }) {
 
   const handlePointerUp = useCallback(() => {
     if (snapped.current && tugMaxY.current > TUG_THRESHOLD) {
-      new Audio("/sounds/switch.mp3").play().catch(() => {});
+      new Audio("/sounds/switch-on.mp3").play().catch(() => {});
       const font = RANDOM_FONTS[Math.floor(Math.random() * RANDOM_FONTS.length)];
       const bg = RANDOM_COLORS[Math.floor(Math.random() * RANDOM_COLORS.length)];
       let chaosStyle = document.getElementById("rope-chaos");
@@ -336,17 +336,18 @@ function ProgressRope({ scrollYProgress, color }) {
         zIndex: 9999,
         pointerEvents: dragging ? "auto" : "none",
         touchAction: dragging ? "none" : "auto",
+        WebkitTouchCallout: "none",
+        WebkitUserSelect: "none",
+        userSelect: "none",
       }}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      <path
-        d={hitPath}
-        stroke="transparent"
-        strokeWidth="24"
-        fill="none"
-        style={{ pointerEvents: "auto", cursor: "grab", touchAction: "none" }}
+      <rect
+        x="0" y="0" width="100%" height="30"
+        fill="transparent"
+        style={{ pointerEvents: "auto", cursor: "grab", touchAction: "none", WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
         onPointerDown={handlePointerDown}
       />
       {segments.map((seg, i) => (
