@@ -23,13 +23,6 @@ export default function App({ Component, pageProps }) {
         <Component {...pageProps} />
         <Footer />
         <Analytics />
-        <style jsx global>{`
-          .masonry-posts {
-            display: flex;
-            width: 100%;
-            max-width: 100%;
-          }
-        `}</style>
       </Flex>
     </ThemeProvider>
   );

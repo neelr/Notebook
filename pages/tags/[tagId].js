@@ -1,9 +1,8 @@
 import React from "react";
 import { Flex, Heading } from "theme-ui";
-import { Section, Boop } from "@components/semantics";
+import { Section, Column } from "@components/semantics";
 import Head from "next/head";
 import { local } from "../api/get";
-import Masonry from "react-masonry-css";
 import Post from "@components/post";
 import Tag from "@components/Tag";
 import { notionClient } from "@lib/notion";
@@ -25,44 +24,34 @@ export default function Tags({ docs, id, upvotes, ...props }) {
       </Head>
       <Section
         sx={{
-          width: ["90vw", "85vw", "75vw"],
+          maxWidth: "750px",
           mx: "auto",
+          width: "100%",
         }}
       >
         <Heading
           sx={{
-            fontSize: [3, 4, 5],
+            fontSize: [3, 4],
             mr: "auto",
-            ml: "20px",
-            mb: "10px",
+            mb: "16px",
           }}
         >
           <Tag tag={id} asTitle tilted />
         </Heading>
-        <Masonry
-          breakpointCols={{
-            10000: 3,
-            1024: 2,
-            640: 1,
-            default: 1,
-          }}
-          className="masonry-posts"
-          columnClassName="masonry-posts-column"
-        >
+        <Column>
           {docs.map((v) => (
-            <Boop rotation="3">
-              <Post
-                title={v.title}
-                src={v.coverImage}
-                tags={v.tags}
-                desc={v.description}
-                date={v.dateCreated}
-                votes={upvotes[v.id]}
-                slug={v.slug}
-              />
-            </Boop>
+            <Post
+              key={v.slug}
+              title={v.title}
+              src={v.coverImage}
+              tags={v.tags}
+              desc={v.description}
+              date={v.dateCreated}
+              votes={upvotes[v.id]}
+              slug={v.slug}
+            />
           ))}
-        </Masonry>
+        </Column>
       </Section>
     </Flex>
   );
