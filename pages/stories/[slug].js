@@ -265,8 +265,11 @@ function ProgressRope({ scrollYProgress, color }) {
     const svg = svgRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const mx = clientX - rect.left;
+    const my = clientY - rect.top;
+    if (e.preventDefault) e.preventDefault();
     let closest = -1;
     let closestDist = Infinity;
     const lastIdx = points.current.length - 1;
@@ -283,14 +286,42 @@ function ProgressRope({ scrollYProgress, color }) {
     e.target.setPointerCapture(e.pointerId);
   }, []);
 
-  const handlePointerMove = useCallback((e) => {
-    if (dragIdx.current < 0) return;
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
-    const y = Math.max(1, e.clientY - rect.top);
-    mousePos.current = { x: e.clientX - rect.left, y };
-    if (snapped.current && y > tugMaxY.current) tugMaxY.current = y;
+  useEffect(() => {
+    function getPos(e) {
+      const svg = svgRef.current;
+      if (!svg) return null;
+      const rect = svg.getBoundingClientRect();
+      // Support both pointer and touch events
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: Math.max(1, clientY - rect.top) };
+    }
+    function onMove(e) {
+      if (dragIdx.current < 0) return;
+      const pos = getPos(e);
+      if (!pos) return;
+      mousePos.current = pos;
+      if (snapped.current && pos.y > tugMaxY.current) tugMaxY.current = pos.y;
+      e.preventDefault();
+    }
+    function onUp() {
+      if (dragIdx.current < 0) return;
+      handlePointerUp();
+    }
+    window.addEventListener("pointermove", onMove, { passive: false });
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onUp);
+    window.addEventListener("touchcancel", onUp);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      window.removeEventListener("touchmove", onMove);
+      window.removeEventListener("touchend", onUp);
+      window.removeEventListener("touchcancel", onUp);
+    };
   }, []);
 
   const handlePointerUp = useCallback(() => {
@@ -334,21 +365,28 @@ function ProgressRope({ scrollYProgress, color }) {
         width: "100vw",
         height: "100vh",
         zIndex: 9999,
-        pointerEvents: dragging ? "auto" : "none",
-        touchAction: dragging ? "none" : "auto",
+        pointerEvents: "none",
+        touchAction: "none",
         WebkitTouchCallout: "none",
         WebkitUserSelect: "none",
         userSelect: "none",
       }}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
     >
       <rect
         x="0" y="0" width="100%" height="30"
         fill="transparent"
         style={{ pointerEvents: "auto", cursor: "grab", touchAction: "none", WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
         onPointerDown={handlePointerDown}
+        onTouchStart={handlePointerDown}
+      />
+      <path
+        d={hitPath}
+        stroke="transparent"
+        strokeWidth="30"
+        fill="none"
+        style={{ pointerEvents: "auto", cursor: "grab", touchAction: "none", WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
+        onPointerDown={handlePointerDown}
+        onTouchStart={handlePointerDown}
       />
       {segments.map((seg, i) => (
         <path
