@@ -9,9 +9,9 @@ export default function Tag({ tag, size = "default", tilted = false, asTitle = f
   });
 
   const sizeStyles = {
-    small: { fontSize: 0, px: "8px", py: "2px" },
-    default: { fontSize: 1, px: "8px", py: "2px" },
-    large: { fontSize: 2, px: "12px", py: "4px" },
+    small: { fontSize: 0, px: "6px", py: "1px" },
+    default: { fontSize: 0, px: "8px", py: "2px" },
+    large: { fontSize: 1, px: "10px", py: "3px" },
     title: { fontSize: "inherit", px: "12px", py: "4px" },
   };
 
@@ -21,17 +21,16 @@ export default function Tag({ tag, size = "default", tilted = false, asTitle = f
       sx={{
         color: "background",
         bg: "highlight",
-        mx: asTitle ? 0 : "5px",
+        mx: asTitle ? 0 : "4px",
         my: asTitle ? 0 : "2px",
         fontWeight: "bold",
-        borderRadius: "4px",
+        borderRadius: "12px",
         display: "inline-block",
-        transition: "all 0.2s ease",
-        transform: tilted ? "rotate(-2deg)" : "none",
+        transition: "opacity 0.2s ease",
+        fontFamily: "body",
+        cursor: "pointer",
         ":hover": {
-          bg: "muted",
-          cursor: "pointer",
-          transform: "rotate(-2deg)",
+          opacity: 0.8,
         },
         ...sizeStyles[asTitle ? "title" : size],
         ...sxProp,

@@ -26,12 +26,12 @@ export const Selector = ({ sx, ...props }) => (
   <Select
     sx={{
       transition: "all 0.3s",
-      boxShadow: "2px 2px",
+      border: "1px solid",
+      borderColor: "gray",
       fontSize: 0,
-      bg: "muted",
+      bg: "background",
       ":focus": {
-        bg: "background",
-        boxShadow: "4px 4px",
+        borderColor: "primary",
         outline: "none",
       },
       my: "5px",
@@ -102,16 +102,16 @@ export const TextArea = ({ sx, ...props }) => (
   <Textarea
     sx={{
       transition: "all 0.3s",
-      boxShadow: "2px 2px",
+      border: "1px solid",
+      borderColor: "gray",
       fontSize: 0,
-      bg: "muted",
+      bg: "background",
       display: "block",
       overflow: "hidden",
       width: "100%",
       resize: "both",
       ":focus": {
-        bg: "background",
-        boxShadow: "4px 4px",
+        borderColor: "primary",
         outline: "none",
       },
       ...sx,
@@ -127,12 +127,13 @@ export const TextArea = ({ sx, ...props }) => (
 export const Clicker = ({ sx, ...props }) => (
   <Button
     sx={{
-      boxShadow: "2px 2px #272838",
+      border: "1px solid",
+      borderColor: "gray",
       outline: "none",
       transition: "all 0.3s",
+      cursor: "pointer",
       ":hover": {
-        boxShadow: "4px 4px #272838",
-        cursor: "pointer",
+        borderColor: "text",
       },
       ...sx,
     }}
@@ -144,12 +145,12 @@ export const Inp = ({ sx, ...props }) => (
   <Input
     sx={{
       transition: "all 0.3s",
-      boxShadow: "2px 2px",
-      fontSize: 0,
-      bg: "muted",
+      border: "1px solid",
+      borderColor: "gray",
+      fontSize: 2,
+      bg: "background",
       ":focus": {
-        bg: "background",
-        boxShadow: "4px 4px",
+        borderColor: "primary",
         outline: "none",
       },
       my: "5px",
