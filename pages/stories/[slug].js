@@ -5,7 +5,6 @@ import {
   Image,
   Box,
   Link as RebassLink,
-  useColorMode,
 } from "theme-ui";
 import Link from "next/link";
 import Head from "next/head";
@@ -25,17 +24,12 @@ const A = ({ sx, ...props }) => (
   <RebassLink
     sx={{
       color: "primary",
-
       textDecoration: "underline",
-
-      textDecorationStyle: "wavy",
-
       ":hover": {
-        color: "secondary",
-
+        color: "accent",
         cursor: "pointer",
+        opacity: 0.8,
       },
-
       ...sx,
     }}
     {...props}
@@ -45,7 +39,6 @@ const A = ({ sx, ...props }) => (
 export default function Story({ id, story, votes, ...props }) {
   const { scrollYProgress } = useScroll();
   let [count, setCount] = useState(false);
-  const [colorMode, setColorMode] = useColorMode();
   const [playBell] = useSound("/sounds/bell.mp3", {
     volume: 0.3,
     sprite: {
@@ -141,18 +134,14 @@ export default function Story({ id, story, votes, ...props }) {
           .glitch::before {
             left: 3px;
             text-shadow: -1px 0 red;
-            background: ${colorMode == "default"
-              ? theme.colors.background
-              : theme.colors.modes.dark.background};
+            background: ${theme.colors.background};
             animation: noise-anim 2s infinite linear alternate-reverse;
           }
           .glitch::after {
             right: 3px;
             text-shadow: 1px 0 blue;
 
-            background: ${colorMode == "default"
-              ? theme.colors.background
-              : theme.colors.modes.dark.background};
+            background: ${theme.colors.background};
             animation: noise-anim-2 2s infinite linear alternate-reverse;
           }
         `}</style>
@@ -162,30 +151,25 @@ export default function Story({ id, story, votes, ...props }) {
 
   const content = story.content.map((v) => v.content).join("  ");
 
-  // Add this utility function at the top of your file
   const getReadingTime = (htmlContent) => {
-    // Remove HTML tags
     const strippedContent = htmlContent.replace(/<[^>]*>/g, " ");
-
-    // Remove extra whitespace and split into words
     const words = strippedContent
       .trim()
       .split(/\s+/)
       .filter((word) => word.length > 0);
-
-    // Calculate reading time (200 words per minute)
     return Math.ceil(words.length / 200);
   };
 
-  // In your Story component, replace the reading time calculation with:
   const readingTime = getReadingTime(content);
 
   return (
     <Flex
       sx={{
         flexDirection: "column",
-        width: ["90vw", "80vw", "60vw"],
+        maxWidth: "750px",
         mx: "auto",
+        width: ["90vw", "90vw", "750px"],
+        px: [3, 3, 0],
       }}
     >
       <Flex
@@ -194,7 +178,7 @@ export default function Story({ id, story, votes, ...props }) {
           top: "0",
           left: "0",
           width: "100vw",
-          height: "10px",
+          height: "3px",
         }}
       >
         <motion.div
@@ -203,10 +187,7 @@ export default function Story({ id, story, votes, ...props }) {
             transformOrigin: "left",
             width: "100vw",
             mr: "auto",
-            background:
-              colorMode == "default"
-                ? theme.colors.primary
-                : theme.colors.modes.dark.primary,
+            background: theme.colors.primary,
           }}
         />
       </Flex>
@@ -228,6 +209,7 @@ export default function Story({ id, story, votes, ...props }) {
         sx={{
           flexWrap: "wrap",
           alignItems: "center",
+          mt: 3,
         }}
       >
         {story.tags.map((v) => (
@@ -237,8 +219,10 @@ export default function Story({ id, story, votes, ...props }) {
           <Boop rotation="10">
             <Flex
               sx={{
-                bg: count ? "pink" : "muted",
-                color: "background",
+                bg: count ? "highlight" : "secondary",
+                color: count ? "background" : "muted",
+                border: count ? "none" : "1px solid",
+                borderColor: "gray",
                 borderRadius: "4px",
                 px: "10px",
                 py: "4px",
@@ -259,12 +243,12 @@ export default function Story({ id, story, votes, ...props }) {
               setCount(true);
             }}
           >
-            <Text sx={{ fontFamily: "heading", fontWeight: "bold" }}>{votes ? votes + count : 0 + count}</Text>
+            <Text sx={{ fontFamily: "body", fontWeight: "bold" }}>{votes ? votes + count : 0 + count}</Text>
             <Heart
               size={18}
               style={{
                 marginLeft: 8,
-                fill: colorMode == "default" ? theme.colors.background : theme.colors.modes.dark.background,
+                fill: "currentColor",
                 display: "block",
               }}
             />
@@ -272,37 +256,61 @@ export default function Story({ id, story, votes, ...props }) {
           </Boop>
         </Box>
       </Flex>
-      <Heading sx={{ fontSize: [4, 5, 6] }}>{story.title}</Heading>
-      <Text
+      <Flex
         sx={{
-          color: "muted",
-          fontStyle: "italic",
+          mt: 3,
+          gap: "20px",
+          alignItems: "flex-start",
+          flexDirection: ["column", "row"],
         }}
       >
-        {story.dateCreated} · {readingTime} min read
-      </Text>
-      <Text
-        sx={{
-          color: "muted",
-          width: "90%",
-          fontStyle: "italic",
-        }}
-      >
-        {story.description}
-      </Text>
-      <Image sx={{ my: "20px" }} src={story.coverImage} />
+        <Box sx={{ flex: 1 }}>
+          <Heading sx={{ fontSize: [3, 4, 5], fontFamily: "heading" }}>{story.title}</Heading>
+          <Text
+            sx={{
+              color: "muted",
+              fontStyle: "italic",
+              mt: 1,
+            }}
+          >
+            {story.dateCreated} · {readingTime} min read
+          </Text>
+          <Text
+            sx={{
+              color: "muted",
+              fontStyle: "italic",
+              mt: 1,
+            }}
+          >
+            {story.description}
+          </Text>
+        </Box>
+        {story.coverImage && (
+          <Image
+            sx={{
+              width: ["100%", "180px"],
+              minWidth: ["auto", "180px"],
+              borderRadius: "4px",
+              opacity: 0.9,
+            }}
+            src={story.coverImage}
+          />
+        )}
+      </Flex>
+      <Flex sx={{ width: "100%", height: "1px", bg: "gray", my: "24px" }} />
       <Flex
         sx={{
           flexDirection: "column",
           blockquote: {
             fontStyle: "italic",
-            borderLeft: "5px solid red",
+            borderLeft: "3px solid",
+            borderColor: "gray",
             pl: "15px",
           },
 
           code: {
-            bg: "muted",
-            color: "background",
+            bg: "secondary",
+            color: "text",
             p: "5px",
             borderRadius: "3px",
             my: "50px",
@@ -314,23 +322,20 @@ export default function Story({ id, story, votes, ...props }) {
 
           a: {
             color: "primary",
-
             textDecoration: "underline",
-
-            textDecorationStyle: "wavy",
-
             ":hover": {
-              color: "secondary",
-
+              color: "accent",
               cursor: "pointer",
+              opacity: 0.8,
             },
           },
 
           "h1,h2,h3,h4,h5,h6": {
             mb: "5px",
             mt: "20px",
-            textDecoration: "underline",
-            textDecorationStyle: "wavy",
+            pb: "4px",
+            borderBottom: "1px solid",
+            borderColor: "gray",
           },
         }}
         dangerouslySetInnerHTML={{
@@ -338,16 +343,18 @@ export default function Story({ id, story, votes, ...props }) {
         }}
       />
 
-      <Flex sx={{ width: "100%", height: "3px", bg: "muted", my: "10px" }} />
-      <Flex sx={{ alignItems: "center" }}>
+      <Flex sx={{ width: "100%", height: "1px", bg: "gray", my: "20px" }} />
+      <Flex sx={{ alignItems: "center", mb: 5 }}>
         <Text sx={{ color: "muted", fontStyle: "italic" }}>
           Thanks for reading! Liked the story? Click the heart
         </Text>
         <Boop rotation="10">
           <Flex
             sx={{
-              bg: count ? "pink" : "muted",
-              color: "background",
+              bg: count ? "highlight" : "secondary",
+              color: count ? "background" : "muted",
+              border: count ? "none" : "1px solid",
+              borderColor: "gray",
               borderRadius: "4px",
               p: "8px",
               alignItems: "center",
@@ -372,7 +379,7 @@ export default function Story({ id, story, votes, ...props }) {
             <Heart
               size={18}
               style={{
-                fill: colorMode == "default" ? theme.colors.background : theme.colors.modes.dark.background,
+                fill: "currentColor",
                 display: "block",
               }}
             />
