@@ -194,17 +194,16 @@ export default function Story({ id, story, votes, ...props }) {
       </Flex>
       <Head>
         <title>{story.title}</title>
+        <meta name="description" content={story.description} />
         <meta property="og:title" content={story.title} />
-
-        <meta property="og:image" content={story.coverImage} />
-
         <meta property="og:description" content={story.description} />
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:title" content={story.title} />
-
-        <meta property="twitter:image" content={story.coverImage} />
-
-        <meta property="twitter:description" content={story.description} />
+        <meta property="og:image" content={story.coverImage} />
+        <meta property="og:url" content={`https://notebook.neelr.dev/stories/${story.slug}`} />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={story.title} />
+        <meta name="twitter:description" content={story.description} />
+        <meta name="twitter:image" content={story.coverImage} />
       </Head>
       <Flex
         sx={{
