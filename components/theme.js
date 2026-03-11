@@ -1,15 +1,15 @@
 export default {
   useCustomProperties: true,
-  initialColorMode: "system",
+  initialColorMode: "default",
   colors: {
-    text: "#293241",
-    background: "#E0FBFC",
-    primary: "#EE6C4D",
-    secondary: "#98C1D9",
+    text: "#333",
+    background: "#fafafa",
+    primary: "#0066cc",
+    secondary: "#f5f5f5",
     highlight: "#EE6C4D",
-    accent: "#e8907a",
-    muted: "#3e4c6c",
-    gray: "#D0D0DD",
+    accent: "#0066cc",
+    muted: "#888",
+    gray: "#e0e0e0",
     notion_callout_default: "rgba(235, 236, 237, 0.3)",
     notion_callout_gray: "rgb(241, 241, 239)",
     notion_callout_brown: "rgb(244, 238, 238)",
@@ -20,42 +20,20 @@ export default {
     notion_callout_purple: "rgb(244, 240, 247)",
     notion_callout_pink: "rgb(249, 238, 243)",
     notion_callout_red: "rgb(253, 235, 236)",
-    modes: {
-      dark: {
-        text: "#E0FBFC",
-        background: "#293241",
-        primary: "#EE6C4D",
-        secondary: "#3D5A80",
-        muted: "#D0D0DD",
-        highlight: "#fecb0a",
-        gray: "#D0D0DD",
-        accent: "#e8907a",
-        notion_callout_default: "rgba(64, 64, 64, 0.3)",
-        notion_callout_gray: "rgb(41, 41, 39)",
-        notion_callout_brown: "rgb(44, 38, 38)",
-        notion_callout_orange: "rgb(51, 36, 21)",
-        notion_callout_yellow: "rgb(51, 43, 19)",
-        notion_callout_green: "rgb(37, 43, 36)",
-        notion_callout_blue: "rgb(31, 43, 48)",
-        notion_callout_purple: "rgb(44, 40, 47)",
-        notion_callout_pink: "rgb(49, 38, 43)",
-        notion_callout_red: "rgb(53, 35, 36)",
-      },
-    },
   },
   fonts: {
     body: 'Georgia, "Times New Roman", Times, serif',
-    heading: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
+    heading: 'Georgia, "Times New Roman", Times, serif',
     monospace: "Menlo, monospace",
   },
-  fontSizes: [12, 14, 16, 20, 24, 32, 48, 64, 72],
+  fontSizes: [12, 14, 17, 20, 24, 32, 48, 64, 72],
   fontWeights: {
     body: 400,
     heading: 700,
     display: 900,
   },
   lineHeights: {
-    body: 1.5,
+    body: 1.6,
     heading: 1.25,
   },
   textStyles: {
@@ -75,7 +53,7 @@ export default {
   styles: {
     Container: {
       p: 3,
-      maxWidth: 1024,
+      maxWidth: 750,
     },
     root: {
       fontFamily: "body",
@@ -108,10 +86,10 @@ export default {
     a: {
       color: "primary",
       textDecoration: "underline",
-      textDecorationStyle: "wavy",
+      cursor: "pointer",
       ":hover": {
-        color: "secondary",
-        cursor: "pointer",
+        color: "accent",
+        opacity: 0.8,
       },
     },
     pre: {
@@ -119,8 +97,9 @@ export default {
       fontSize: 1,
       p: 3,
       color: "text",
-      bg: "muted",
+      bg: "secondary",
       overflow: "auto",
+      borderRadius: "4px",
       code: {
         color: "inherit",
       },
@@ -131,8 +110,10 @@ export default {
     },
     inlineCode: {
       fontFamily: "monospace",
-      color: "secondary",
-      bg: "muted",
+      color: "text",
+      bg: "secondary",
+      px: 1,
+      borderRadius: "3px",
     },
     table: {
       width: "100%",
@@ -144,7 +125,7 @@ export default {
         py: "4px",
         pr: "4px",
         pl: 0,
-        borderColor: "muted",
+        borderColor: "gray",
         borderBottomStyle: "solid",
       },
     },
@@ -159,7 +140,7 @@ export default {
     hr: {
       border: 0,
       borderBottom: "1px solid",
-      borderColor: "muted",
+      borderColor: "gray",
     },
   },
 };
