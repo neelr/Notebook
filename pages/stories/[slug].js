@@ -179,6 +179,7 @@ export default function Story({ id, story, votes, ...props }) {
           left: "0",
           width: "100vw",
           height: "3px",
+          zIndex: 9999,
         }}
       >
         <motion.div
@@ -280,6 +281,7 @@ export default function Story({ id, story, votes, ...props }) {
               color: "muted",
               fontStyle: "italic",
               mt: 1,
+              display: "block",
             }}
           >
             {story.description}
@@ -301,6 +303,8 @@ export default function Story({ id, story, votes, ...props }) {
       <Flex
         sx={{
           flexDirection: "column",
+          position: "relative",
+          overflow: ["hidden", "hidden", "visible"],
           blockquote: {
             fontStyle: "italic",
             borderLeft: "3px solid",

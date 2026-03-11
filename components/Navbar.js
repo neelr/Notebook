@@ -1,10 +1,12 @@
+import React from "react";
 import { Flex, Text, Link as A, Image } from "@theme-ui/components";
 import Link from "next/link";
 import useSound from "use-sound";
 import { Boop } from "./semantics";
 
-const NavLink = ({ sx, ...props }) => (
+const NavLink = React.forwardRef(({ sx, ...props }, ref) => (
   <A
+    ref={ref}
     sx={{
       fontWeight: 400,
       color: "text",
@@ -19,7 +21,7 @@ const NavLink = ({ sx, ...props }) => (
     }}
     {...props}
   />
-);
+));
 
 export default function NavBar({ sx, ...props }) {
   const [playPop, { stop }] = useSound("/sounds/boing.mp3", {
@@ -60,7 +62,7 @@ export default function NavBar({ sx, ...props }) {
           />
         </Boop>
       </Flex>
-      <Link href="/" legacyBehavior>
+      <Link href="/" passHref legacyBehavior>
         <NavLink m="auto">My Notebook</NavLink>
       </Link>
     </Flex>

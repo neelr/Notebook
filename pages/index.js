@@ -6,6 +6,7 @@ import Head from "next/head";
 import { local } from "./api/get";
 import Post, { MiniPost } from "@components/post";
 import { notionClient } from "@lib/notion";
+import Book from "@components/icons/book";
 
 export default function Home({ featured, docs, upvotes, ...props }) {
   let [tilt, setTilt] = useState(-1);
@@ -41,7 +42,25 @@ export default function Home({ featured, docs, upvotes, ...props }) {
         />
         <script src="https://analytics.stacc.cc/api/script/v925J2qMyDZV"></script>
       </Head>
-      <Section sx={{ maxWidth: "750px", mx: "auto", width: "100%" }}>
+      <Section sx={{ maxWidth: "750px", mx: "auto", width: "100%", position: "relative" }}>
+        <Column
+          sx={{
+            "& > svg": {
+              fill: "text",
+              width: "100%",
+              height: "100%",
+              opacity: 0.07,
+            },
+            width: [0, "130px", "25vw", "25vw"],
+            position: "absolute",
+            right: "-15vw",
+            top: [0, 18, "5px", "5px"],
+            zIndex: "0",
+            pointerEvents: "none",
+          }}
+        >
+          <Book />
+        </Column>
         <Heading
           sx={{
             fontSize: [4, 5, 6],

@@ -1,11 +1,9 @@
 import React from "react";
 import { Flex, Heading } from "theme-ui";
 import Head from "next/head";
-import { useColorMode } from "theme-ui";
 import theme from "@components/theme";
 
 export default function Error() {
-  const [colorMode, setColorMode] = useColorMode();
   return (
     <Flex flexDirection="column">
       <Head>
@@ -77,18 +75,14 @@ export default function Error() {
         .glitch::before {
           left: 3px;
           text-shadow: -1px 0 red;
-          background: ${colorMode == "default"
-            ? theme.colors.background
-            : theme.colors.modes.dark.background};
+          background: ${theme.colors.background};
           animation: noise-anim 2s infinite linear alternate-reverse;
         }
         .glitch::after {
           right: 3px;
           text-shadow: 1px 0 blue;
 
-          background: ${colorMode == "default"
-            ? theme.colors.background
-            : theme.colors.modes.dark.background};
+          background: ${theme.colors.background};
           animation: noise-anim-2 2s infinite linear alternate-reverse;
         }
       `}</style>
