@@ -333,6 +333,11 @@ export default function Story({ id, story, votes, ...props }) {
             },
           },
 
+          "ul, ol": {
+            paddingLeft: [0, "1.2em"],
+            marginLeft: 0,
+          },
+
           "h1,h2,h3,h4,h5,h6": {
             mb: "5px",
             mt: "20px",
