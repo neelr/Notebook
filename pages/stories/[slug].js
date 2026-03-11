@@ -11,12 +11,12 @@ import Head from "next/head";
 import { Heart } from "react-feather";
 import fetch from "isomorphic-unfetch";
 import { local } from "../api/get.js";
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import useSound from "use-sound";
 import { Boop } from "@components/semantics";
 import Tag from "@components/Tag";
 import theme from "@components/theme";
-import { useScroll, motion } from "framer-motion";
+import { useScroll, motion, useSpring, useMotionValue, useTransform } from "framer-motion";
 import { notionClient } from "@lib/notion";
 import handleCacheAndRSS from "@lib/handleCache";
 
@@ -35,6 +35,332 @@ const A = ({ sx, ...props }) => (
     {...props}
   />
 );
+
+const NUM_POINTS = 20;
+const GRAVITY = 0.15;
+const DAMPING = 0.97;
+const ITERATIONS = 15;
+const WEAR_RATE = 0.0024;
+const WEAR_MAX = 1.0;
+
+const TUG_THRESHOLD = 80;
+const RANDOM_FONTS = [
+  "'Comic Sans MS', cursive",
+  "'Courier New', monospace",
+  "'Papyrus', fantasy",
+  "'Impact', sans-serif",
+  "'Georgia', serif",
+  "'Trebuchet MS', sans-serif",
+  "'Lucida Console', monospace",
+  "system-ui, sans-serif",
+  "'Times New Roman', serif",
+  "'Brush Script MT', cursive",
+];
+const RANDOM_COLORS = [
+  "#fff8dc", "#f0fff0", "#ffe4e1", "#e6e6fa", "#fff0f5",
+  "#f5f5dc", "#fdf5e6", "#f0f8ff", "#fffacd", "#e0ffff",
+  "#ffefd5", "#d4f1c4", "#fce4ec", "#e8eaf6", "#fff3e0",
+];
+
+function ProgressRope({ scrollYProgress, color }) {
+  const svgRef = useRef(null);
+  const points = useRef([]);
+  const prevPoints = useRef([]);
+  const wear = useRef([]); // per-segment wear 0..1
+  const dragIdx = useRef(-1);
+  const mousePos = useRef({ x: 0, y: 0 });
+  const animFrame = useRef(null);
+  const [segments, setSegments] = useState([]);
+  const [dragging, setDragging] = useState(false);
+  const ropeEnd = useRef(0);
+  const snapped = useRef(false);
+  const snapIdx = useRef(-1);
+  const tugMaxY = useRef(0);
+
+  useEffect(() => {
+    const w = window.innerWidth;
+    const progress = scrollYProgress.get();
+    const endX = progress * w;
+    const pts = [];
+    const prev = [];
+    for (let i = 0; i < NUM_POINTS; i++) {
+      const t = i / (NUM_POINTS - 1);
+      pts.push({ x: t * endX, y: 3 });
+      prev.push({ x: t * endX, y: 3 });
+    }
+    points.current = pts;
+    prevPoints.current = prev;
+    wear.current = new Array(NUM_POINTS - 1).fill(0);
+    ropeEnd.current = endX;
+  }, []);
+
+  useEffect(() => {
+    return scrollYProgress.on("change", (v) => {
+      ropeEnd.current = v * window.innerWidth;
+    });
+  }, [scrollYProgress]);
+
+  useEffect(() => {
+    function simulate() {
+      const pts = points.current;
+      const prev = prevPoints.current;
+      const w = wear.current;
+      if (!pts.length) { animFrame.current = requestAnimationFrame(simulate); return; }
+
+      const endX = ropeEnd.current;
+      const restLen = endX / (NUM_POINTS - 1);
+      const lastIdx = pts.length - 1;
+
+      // Verlet integration
+      const snapGravity = 1.5;
+      for (let i = 0; i < pts.length; i++) {
+        if (i === 0 || i === lastIdx || dragIdx.current === i) continue;
+        const isSnapped = snapped.current;
+        const g = isSnapped ? snapGravity : GRAVITY;
+        const d = isSnapped ? 0.9 : DAMPING;
+        const vx = (pts[i].x - prev[i].x) * d;
+        const vy = (pts[i].y - prev[i].y) * d;
+        prev[i].x = pts[i].x;
+        prev[i].y = pts[i].y;
+        pts[i].x += vx;
+        pts[i].y += vy + g;
+      }
+
+      const pinY = snapped.current ? 0 : 3;
+      pts[0].x = 0; pts[0].y = pinY;
+      pts[lastIdx].x = endX; pts[lastIdx].y = pinY;
+
+      if (dragIdx.current >= 0) {
+        const di = dragIdx.current;
+        pts[di].x += (mousePos.current.x - pts[di].x) * 0.35;
+        pts[di].y += (mousePos.current.y - pts[di].y) * 0.35;
+        prev[di].x = pts[di].x;
+        prev[di].y = pts[di].y;
+      }
+
+      // Accumulate wear around drag point based on proximity and stretch
+      if (!snapped.current && dragIdx.current >= 0) {
+        const di = dragIdx.current;
+        for (let i = 0; i < pts.length - 1; i++) {
+          // Segment i connects points i and i+1; drag point is di
+          // Segments di-1 and di are directly adjacent to the grabbed point
+          const segCenter = i + 0.5;
+          const dist2drag = Math.abs(segCenter - di);
+          const proximity = Math.exp(-dist2drag * 0.5);
+          const dx = pts[i + 1].x - pts[i].x;
+          const dy = pts[i + 1].y - pts[i].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const stretch = restLen > 0 ? Math.max(0, dist / restLen - 1) : 0;
+          w[i] = Math.min(WEAR_MAX, w[i] + stretch * proximity * WEAR_RATE);
+        }
+
+        // Snap at the most worn segment
+        let maxWearIdx = -1;
+        for (let i = 0; i < w.length; i++) {
+          if (w[i] >= WEAR_MAX) {
+            maxWearIdx = i;
+            break;
+          }
+        }
+        if (maxWearIdx >= 0) {
+          snapped.current = true;
+          snapIdx.current = maxWearIdx + 1;
+          dragIdx.current = -1;
+          setDragging(false);
+        }
+      }
+
+      // Constraint relaxation
+      const dangleLen = 15;
+      const iters = snapped.current ? 6 : ITERATIONS;
+
+      function constrainPair(i, seg) {
+        const dx = pts[i + 1].x - pts[i].x;
+        const dy = pts[i + 1].y - pts[i].y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
+        if (dist < seg) return;
+        const diff = (dist - seg) / dist * 0.5;
+        const ox = dx * diff;
+        const oy = dy * diff;
+        const pinI = i === 0;
+        const pinJ = i + 1 === lastIdx;
+        const dragI = dragIdx.current === i;
+        const dragJ = dragIdx.current === i + 1;
+        if (pinI || dragI) {
+          pts[i + 1].x -= ox * 2; pts[i + 1].y -= oy * 2;
+        } else if (pinJ || dragJ) {
+          pts[i].x += ox * 2; pts[i].y += oy * 2;
+        } else {
+          pts[i].x += ox; pts[i].y += oy;
+          pts[i + 1].x -= ox; pts[i + 1].y -= oy;
+        }
+      }
+
+      for (let iter = 0; iter < iters; iter++) {
+        if (snapped.current) {
+          const si = snapIdx.current;
+          // Left half dangles from start
+          for (let i = 0; i < si - 1; i++) {
+            constrainPair(i, dangleLen);
+            pts[0].x = 0; pts[0].y = pinY;
+          }
+          // Right half dangles from end
+          for (let i = lastIdx - 1; i >= si; i--) {
+            constrainPair(i, dangleLen);
+            pts[lastIdx].x = endX; pts[lastIdx].y = pinY;
+          }
+        } else {
+          for (let i = 0; i < pts.length - 1; i++) constrainPair(i, restLen);
+        }
+        pts[0].x = 0; pts[0].y = pinY;
+        pts[lastIdx].x = endX; pts[lastIdx].y = pinY;
+      }
+
+      // When not snapped and not dragging, pull points toward the straight line
+      if (!snapped.current && dragIdx.current < 0) {
+        for (let i = 1; i < lastIdx; i++) {
+          const t = i / lastIdx;
+          const targetX = t * endX;
+          const distFromLine = Math.abs(pts[i].y - 3);
+          // Strong correction when close to line (prevents droop), gentle when far (slow snap-back)
+          const strength = distFromLine > 5 ? 0.008 : 0.15;
+          pts[i].x += (targetX - pts[i].x) * strength;
+          pts[i].y += (3 - pts[i].y) * strength;
+        }
+      }
+
+      // Build per-segment SVG lines with wear color
+      const segs = [];
+      function addSegments(start, end) {
+        for (let i = start; i < end; i++) {
+          const p0 = pts[Math.max(i - 1, start)];
+          const p1 = pts[i];
+          const p2 = pts[i + 1];
+          const p3 = pts[Math.min(i + 2, end)];
+          const cp1x = p1.x + (p2.x - p0.x) / 6;
+          const cp1y = p1.y + (p2.y - p0.y) / 6;
+          const cp2x = p2.x - (p3.x - p1.x) / 6;
+          const cp2y = p2.y - (p3.y - p1.y) / 6;
+          const d = `M${p1.x.toFixed(1)},${p1.y.toFixed(1)} C${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+          segs.push({ d, wear: w[i] || 0 });
+        }
+      }
+
+      if (snapped.current) {
+        addSegments(0, snapIdx.current - 1);
+        addSegments(snapIdx.current, lastIdx);
+      } else {
+        addSegments(0, lastIdx);
+      }
+      setSegments(segs);
+
+      animFrame.current = requestAnimationFrame(simulate);
+    }
+
+    animFrame.current = requestAnimationFrame(simulate);
+    return () => cancelAnimationFrame(animFrame.current);
+  }, []);
+
+  const handlePointerDown = useCallback((e) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    let closest = -1;
+    let closestDist = Infinity;
+    const lastIdx = points.current.length - 1;
+    for (let i = 1; i < lastIdx; i++) {
+      const dx = points.current[i].x - mx;
+      const dy = points.current[i].y - my;
+      const d = dx * dx + dy * dy;
+      if (d < closestDist) { closestDist = d; closest = i; }
+    }
+    dragIdx.current = closest;
+    mousePos.current = { x: mx, y: my };
+    tugMaxY.current = my;
+    setDragging(true);
+    e.target.setPointerCapture(e.pointerId);
+  }, []);
+
+  const handlePointerMove = useCallback((e) => {
+    if (dragIdx.current < 0) return;
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const y = Math.max(1, e.clientY - rect.top);
+    mousePos.current = { x: e.clientX - rect.left, y };
+    if (snapped.current && y > tugMaxY.current) tugMaxY.current = y;
+  }, []);
+
+  const handlePointerUp = useCallback(() => {
+    if (snapped.current && tugMaxY.current > TUG_THRESHOLD) {
+      const font = RANDOM_FONTS[Math.floor(Math.random() * RANDOM_FONTS.length)];
+      const bg = RANDOM_COLORS[Math.floor(Math.random() * RANDOM_COLORS.length)];
+      let chaosStyle = document.getElementById("rope-chaos");
+      if (!chaosStyle) {
+        chaosStyle = document.createElement("style");
+        chaosStyle.id = "rope-chaos";
+        document.head.appendChild(chaosStyle);
+      }
+      chaosStyle.textContent = `* { font-family: ${font} !important; } body { background-color: ${bg} !important; }`;
+    }
+    tugMaxY.current = 0;
+    dragIdx.current = -1;
+    setDragging(false);
+  }, []);
+
+  // Interpolate color: base -> white as wear increases (like a rubberband stretching pale)
+  function wearColor(w) {
+    if (w <= 0) return color;
+    const t = Math.min(1, w);
+    const r = Math.round(parseInt(color.slice(1, 3), 16) * (1 - t) + 255 * t);
+    const g = Math.round(parseInt(color.slice(3, 5), 16) * (1 - t) + 255 * t);
+    const b = Math.round(parseInt(color.slice(5, 7), 16) * (1 - t) + 255 * t);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  // Build one combined path for hit area
+  const hitPath = segments.map(s => s.d).join(" ");
+
+  return (
+    <svg
+      ref={svgRef}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 9999,
+        pointerEvents: dragging ? "auto" : "none",
+      }}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+    >
+      <path
+        d={hitPath}
+        stroke="transparent"
+        strokeWidth="24"
+        fill="none"
+        style={{ pointerEvents: "auto", cursor: "grab" }}
+        onPointerDown={handlePointerDown}
+      />
+      {segments.map((seg, i) => (
+        <path
+          key={i}
+          d={seg.d}
+          stroke={wearColor(seg.wear)}
+          strokeWidth={5}
+          fill="none"
+          strokeLinecap="butt"
+          style={{ pointerEvents: "none" }}
+        />
+      ))}
+    </svg>
+  );
+}
 
 export default function Story({ id, story, votes, ...props }) {
   const { scrollYProgress } = useScroll();
@@ -172,26 +498,7 @@ export default function Story({ id, story, votes, ...props }) {
         px: [3, 3, 0],
       }}
     >
-      <Flex
-        sx={{
-          position: "fixed",
-          top: "0",
-          left: "0",
-          width: "100vw",
-          height: "3px",
-          zIndex: 9999,
-        }}
-      >
-        <motion.div
-          style={{
-            scaleX: scrollYProgress,
-            transformOrigin: "left",
-            width: "100vw",
-            mr: "auto",
-            background: theme.colors.primary,
-          }}
-        />
-      </Flex>
+      <ProgressRope scrollYProgress={scrollYProgress} color={theme.colors.primary} />
       <Head>
         <title>{story.title}</title>
         <meta name="description" content={story.description} />
