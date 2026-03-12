@@ -473,13 +473,6 @@ function ProgressRope({ scrollYProgress, color }) {
         userSelect: "none",
       }}
     >
-      <rect
-        x="0" y="0" width="100%" height="30"
-        fill="transparent"
-        style={{ pointerEvents: "auto", cursor: "grab", touchAction: "none", WebkitTouchCallout: "none", WebkitUserSelect: "none", userSelect: "none" }}
-        onPointerDown={handlePointerDown}
-        onTouchStart={handlePointerDown}
-      />
       <path
         d={hitPath}
         stroke="transparent"
