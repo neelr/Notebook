@@ -229,6 +229,16 @@ function ProgressRope({ scrollYProgress, color }) {
         }
       }
 
+      // Re-apply drag position after constraints so the grabbed point
+      // tracks the cursor closely and neighbors don't overshoot past it
+      if (dragIdx.current >= 0) {
+        const di = dragIdx.current;
+        pts[di].x += (mousePos.current.x - pts[di].x) * 0.5;
+        pts[di].y += (mousePos.current.y - pts[di].y) * 0.5;
+        prev[di].x = pts[di].x;
+        prev[di].y = pts[di].y;
+      }
+
       // Build per-segment SVG lines with wear color
       const segs = [];
       function addSegments(start, end) {
