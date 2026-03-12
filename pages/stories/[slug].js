@@ -43,6 +43,12 @@ const ITERATIONS = 15;
 const WEAR_RATE = 0.0024;
 const WEAR_MAX = 1.0;
 
+const SCROLL_FRICTION_THRESHOLD = 40;
+const SCROLL_SNAP_THRESHOLD = 1;
+const SCROLL_FORCE = 0.003;
+const SCROLL_DRAG_DECAY = 0.98;
+const SCROLL_RELEASE_DECAY = 0.85;
+
 const TUG_THRESHOLD = 80;
 const RANDOM_FONTS = [
   "'Comic Sans MS', cursive",
@@ -76,6 +82,9 @@ function ProgressRope({ scrollYProgress, color }) {
   const snapped = useRef(false);
   const snapIdx = useRef(-1);
   const tugMaxY = useRef(0);
+  const scrollVel = useRef(0);
+  const prevEndX = useRef(0);
+  const prevDragX = useRef(0);
 
   useEffect(() => {
     const w = window.innerWidth;
@@ -96,7 +105,9 @@ function ProgressRope({ scrollYProgress, color }) {
 
   useEffect(() => {
     return scrollYProgress.on("change", (v) => {
-      ropeEnd.current = v * window.innerWidth;
+      if (dragIdx.current < 0 && Math.abs(scrollVel.current) < 0.3) {
+        ropeEnd.current = v * window.innerWidth;
+      }
     });
   }, [scrollYProgress]);
 
@@ -110,6 +121,7 @@ function ProgressRope({ scrollYProgress, color }) {
       const endX = ropeEnd.current;
       const restLen = endX / (NUM_POINTS - 1);
       const lastIdx = pts.length - 1;
+      const floating = dragIdx.current >= 0 && !snapped.current;
 
       // Verlet integration
       const snapGravity = 1.5;
@@ -128,14 +140,42 @@ function ProgressRope({ scrollYProgress, color }) {
 
       const pinY = snapped.current ? 0 : 3;
       pts[0].x = 0; pts[0].y = pinY;
-      pts[lastIdx].x = endX; pts[lastIdx].y = pinY;
+      if (!floating) { pts[lastIdx].x = endX; pts[lastIdx].y = pinY; }
 
       if (dragIdx.current >= 0) {
         const di = dragIdx.current;
-        pts[di].x += (mousePos.current.x - pts[di].x) * 0.35;
-        pts[di].y += (mousePos.current.y - pts[di].y) * 0.35;
-        prev[di].x = pts[di].x;
-        prev[di].y = pts[di].y;
+        if (snapped.current) {
+          // Snapped: drag point tracks cursor exactly
+          pts[di].x = mousePos.current.x;
+          pts[di].y = mousePos.current.y;
+          prev[di].x = pts[di].x;
+          prev[di].y = pts[di].y;
+          // Interpolate pin-to-drag points (taut stretch)
+          const si = snapIdx.current;
+          const onLeft = di < si;
+          if (onLeft) {
+            for (let j = 1; j < di; j++) {
+              const t = j / di;
+              pts[j].x = pts[0].x + t * (pts[di].x - pts[0].x);
+              pts[j].y = pts[0].y + t * (pts[di].y - pts[0].y);
+              prev[j].x = pts[j].x;
+              prev[j].y = pts[j].y;
+            }
+          } else {
+            for (let j = lastIdx - 1; j > di; j--) {
+              const t = (lastIdx - j) / (lastIdx - di);
+              pts[j].x = pts[lastIdx].x + t * (pts[di].x - pts[lastIdx].x);
+              pts[j].y = pts[lastIdx].y + t * (pts[di].y - pts[lastIdx].y);
+              prev[j].x = pts[j].x;
+              prev[j].y = pts[j].y;
+            }
+          }
+        } else {
+          pts[di].x += (mousePos.current.x - pts[di].x) * 0.35;
+          pts[di].y += (mousePos.current.y - pts[di].y) * 0.35;
+          prev[di].x = pts[di].x;
+          prev[di].y = pts[di].y;
+        }
       }
 
       // Accumulate wear around drag point based on proximity and stretch
@@ -183,7 +223,7 @@ function ProgressRope({ scrollYProgress, color }) {
         const ox = dx * diff;
         const oy = dy * diff;
         const pinI = i === 0;
-        const pinJ = i + 1 === lastIdx;
+        const pinJ = (i + 1 === lastIdx) && !floating;
         const dragI = dragIdx.current === i;
         const dragJ = dragIdx.current === i + 1;
         if (pinI || dragI) {
@@ -199,21 +239,80 @@ function ProgressRope({ scrollYProgress, color }) {
       for (let iter = 0; iter < iters; iter++) {
         if (snapped.current) {
           const si = snapIdx.current;
-          // Left half dangles from start
-          for (let i = 0; i < si - 1; i++) {
-            constrainPair(i, dangleLen);
-            pts[0].x = 0; pts[0].y = pinY;
+          const di = dragIdx.current;
+          const draggingLeft = di >= 0 && di < si;
+          const draggingRight = di >= si;
+
+          // Left half
+          if (draggingLeft) {
+            // Only constrain tail: drag point to free end
+            for (let i = di; i < si - 1; i++) {
+              constrainPair(i, dangleLen);
+            }
+          } else {
+            // Not dragging this half, constrain normally
+            for (let i = 0; i < si - 1; i++) {
+              constrainPair(i, dangleLen);
+              pts[0].x = 0; pts[0].y = pinY;
+            }
           }
-          // Right half dangles from end
-          for (let i = lastIdx - 1; i >= si; i--) {
-            constrainPair(i, dangleLen);
-            pts[lastIdx].x = endX; pts[lastIdx].y = pinY;
+
+          // Right half
+          if (draggingRight) {
+            // Only constrain tail: free end to drag point
+            for (let i = di - 1; i >= si; i--) {
+              constrainPair(i, dangleLen);
+            }
+          } else {
+            // Not dragging this half, constrain normally
+            for (let i = lastIdx - 1; i >= si; i--) {
+              constrainPair(i, dangleLen);
+              pts[lastIdx].x = endX; pts[lastIdx].y = pinY;
+            }
           }
         } else {
           for (let i = 0; i < pts.length - 1; i++) constrainPair(i, restLen);
         }
         pts[0].x = 0; pts[0].y = pinY;
+        if (!floating) { pts[lastIdx].x = endX; pts[lastIdx].y = pinY; }
+      }
+
+      // Measure pull force and drive scroll (non-snapped drag)
+      if (floating) {
+        // See where endpoint WANTS to go, then re-pin it
+        const displacement = pts[lastIdx].x - endX;
         pts[lastIdx].x = endX; pts[lastIdx].y = pinY;
+
+        // Static friction: only accumulate velocity past a threshold
+        const excess = Math.max(0, Math.abs(displacement) - SCROLL_FRICTION_THRESHOLD);
+        if (excess > 0) {
+          scrollVel.current += Math.sign(displacement) * excess * SCROLL_FORCE;
+        }
+      }
+
+      // Measure pull force from mouse drag (snapped drag, right half only)
+      if (snapped.current && dragIdx.current >= snapIdx.current) {
+        const mx = mousePos.current.x;
+        const delta = mx - prevDragX.current;
+        prevDragX.current = mx;
+
+        const excess = Math.max(0, Math.abs(delta) - SCROLL_SNAP_THRESHOLD);
+        if (excess > 0) {
+          scrollVel.current += Math.sign(delta) * excess * SCROLL_FORCE * 5;
+        }
+      }
+
+      // Apply scroll velocity (drag or inertia)
+      if (Math.abs(scrollVel.current) > 0.1) {
+        // Friction: decay velocity every frame
+        scrollVel.current *= dragIdx.current >= 0 ? SCROLL_DRAG_DECAY : SCROLL_RELEASE_DECAY;
+        const ww = window.innerWidth;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        if (maxScroll > 0) {
+          const newEndX = Math.max(0, Math.min(ww, ropeEnd.current + scrollVel.current));
+          ropeEnd.current = newEndX;
+          window.scrollTo(0, (newEndX / ww) * maxScroll);
+        }
       }
 
       // When not snapped and not dragging, pull points toward the straight line
@@ -227,16 +326,6 @@ function ProgressRope({ scrollYProgress, color }) {
           pts[i].x += (targetX - pts[i].x) * strength;
           pts[i].y += (3 - pts[i].y) * strength;
         }
-      }
-
-      // Re-apply drag position after constraints so the grabbed point
-      // tracks the cursor closely and neighbors don't overshoot past it
-      if (dragIdx.current >= 0) {
-        const di = dragIdx.current;
-        pts[di].x += (mousePos.current.x - pts[di].x) * 0.5;
-        pts[di].y += (mousePos.current.y - pts[di].y) * 0.5;
-        prev[di].x = pts[di].x;
-        prev[di].y = pts[di].y;
       }
 
       // Build per-segment SVG lines with wear color
@@ -272,6 +361,7 @@ function ProgressRope({ scrollYProgress, color }) {
   }, []);
 
   const handlePointerDown = useCallback((e) => {
+    prevEndX.current = ropeEnd.current;
     const svg = svgRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
@@ -279,6 +369,7 @@ function ProgressRope({ scrollYProgress, color }) {
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     const mx = clientX - rect.left;
     const my = clientY - rect.top;
+    prevDragX.current = mx;
     if (e.preventDefault) e.preventDefault();
     let closest = -1;
     let closestDist = Infinity;
